@@ -18,13 +18,6 @@ Filter by service type, search by address, and get directions — all from a sin
 </a>
 &nbsp;&nbsp;
 <br><br>
-
-<!-- ── STATS BADGES ── -->
-![Stores](https://img.shields.io/badge/Stores-102-2D8653?style=flat-square)
-![Service Filters](https://img.shields.io/badge/Service%20Filters-4-1A6335?style=flat-square)
-![API Key](https://img.shields.io/badge/API%20Key%20Required-None-D4AC5A?style=flat-square)
-![Framework](https://img.shields.io/badge/Framework-Vanilla%20JS-0B3D1F?style=flat-square)
-
 </div>
 
 ---
