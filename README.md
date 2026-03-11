@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/25893325/README.md)
 # ☕ Starbucks in Seattle — Interactive Location Finder
 
 > An interactive web map of all 102 Starbucks locations in Seattle, WA.  
