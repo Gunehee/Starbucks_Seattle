@@ -3,8 +3,6 @@
 **A geospatial web application mapping all 102 Starbucks locations across Seattle, WA.**  
 Filter by service type, search by store name or address, and navigate directly to any location.
 
-🔗 **Live Demo: [https://gunehee.github.io/Starbucks_Seattle/](https://gunehee.github.io/Starbucks_Seattle/)**
-
 ---
 
 ## Overview
@@ -120,5 +118,3 @@ Special thanks to **Professor Bo Zhao** and **Teaching Assistant Steven Bao** at
 - Condé Nast Traveler. (n.d.). *Starbucks Reserve Roastery, Seattle*. https://www.cntraveler.com/bars/seattle/starbucks-reserve-roastery
 
 ---
-
-*GEOG 495 — Digital Geographies · University of Washington · Seattle, WA*
