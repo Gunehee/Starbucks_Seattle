@@ -1,3 +1,4 @@
+[README-3.md](https://github.com/user-attachments/files/25894122/README-3.md)
 <div align="center">
 
 # ☕ Starbucks in Seattle
@@ -9,11 +10,11 @@ Filter by service type, search by address, and get directions — all from a sin
 <br>
 
 <!-- ── DEMO BUTTONS ── -->
-<a href="https://gunehee.github.io/Starbucks_Seattle/map.html">
+<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
   <img src="https://img.shields.io/badge/🗺️%20Launch%20Interactive%20Map-0B3D1F?style=for-the-badge&logoColor=white" alt="Launch Map" height="44">
 </a>
 &nbsp;&nbsp;
-<a href="https://gunehee.github.io/Starbucks_Seattle/">
+<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/index.html">
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
 &nbsp;&nbsp;
@@ -24,7 +25,7 @@ Filter by service type, search by address, and get directions — all from a sin
 <br><br>
 
 <!-- ── PREVIEW LINK ── -->
-<a href="https://gunehee.github.io/Starbucks_Seattle/map.html">
+<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
   <img src="https://img.shields.io/badge/Click%20to%20explore%20102%20Seattle%20Starbucks%20locations%20→-D4AC5A?style=flat-square&logoColor=0B3D1F" alt="Explore the map">
 </a>
 
@@ -46,7 +47,7 @@ Seattle is home to more Starbucks locations per capita than any other U.S. city 
 
 This project visualizes those locations through an interactive web map built with Leaflet.js, allowing users to explore stores by service type, search by neighborhood or address, and access store-specific details including hours of operation and phone numbers.
 
-> **[→ Open the interactive map](https://gunehee.github.io/Starbucks_Seattle/map.html)** to explore all 102 locations now.
+> **[→ Open the interactive map](https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html)** to explore all 102 locations now.
 
 ---
 
@@ -120,9 +121,22 @@ Starbucks_Seattle/
 
 ---
 
+## Running Locally
+
+```bash
+git clone https://github.com/Gunehee/Starbucks_Seattle.git
+cd Starbucks_Seattle
+open map.html        # launch the interactive map directly
+open index.html      # open the portfolio landing page
+```
+
+No install steps. No local server required.
+
+---
+
 ## Team
 
-Developed as a group assignment for **GEOG 495: Digital Geographies** at the **University of Washington**.
+Developed a **Digital Geographies** at the **University of Washington**.
 
 | Contributor | Responsibilities |
 |---|---|
@@ -130,8 +144,6 @@ Developed as a group assignment for **GEOG 495: Digital Geographies** at the **U
 | **Haochen** | Layer toggle logic, GeoJSON data loading |
 | **Sophia L.** | Map frame, interactive feature implementation |
 | **Sophia S.** | Data collection, cleaning, and GeoJSON export |
-
-Special thanks to **Professor Bo Zhao** and **Teaching Assistant Steven Bao** at the University of Washington for their guidance and feedback throughout this project.
 
 ---
 
@@ -153,3 +165,7 @@ Special thanks to **Professor Bo Zhao** and **Teaching Assistant Steven Bao** at
 - Condé Nast Traveler. (n.d.). *Starbucks Reserve Roastery, Seattle*. https://www.cntraveler.com/bars/seattle/starbucks-reserve-roastery
 
 ---
+
+<div align="center">
+<i>GEOG 495 — Digital Geographies · University of Washington · Seattle, WA</i>
+</div>
