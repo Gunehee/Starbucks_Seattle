@@ -164,7 +164,3 @@ Developed a **Digital Geographies** at the **University of Washington**.
 - Condé Nast Traveler. (n.d.). *Starbucks Reserve Roastery, Seattle*. https://www.cntraveler.com/bars/seattle/starbucks-reserve-roastery
 
 ---
-
-<div align="center">
-<i>GEOG 495 — Digital Geographies · University of Washington · Seattle, WA</i>
-</div>
