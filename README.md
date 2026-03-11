@@ -1,7 +1,42 @@
-# Starbucks in Seattle — Interactive Location Finder
+<div align="center">
+
+# ☕ Starbucks in Seattle
+### Interactive Location Finder
 
 **A geospatial web application mapping all 102 Starbucks locations across Seattle, WA.**  
-Filter by service type, search by store name or address, and navigate directly to any location.
+Filter by service type, search by address, and get directions — all from a single file with no API key.
+
+<br>
+
+<!-- ── DEMO BUTTONS ── -->
+<a href="https://gunehee.github.io/Starbucks_Seattle/map.html">
+  <img src="https://img.shields.io/badge/🗺️%20Launch%20Interactive%20Map-0B3D1F?style=for-the-badge&logoColor=white" alt="Launch Map" height="44">
+</a>
+&nbsp;&nbsp;
+<a href="https://gunehee.github.io/Starbucks_Seattle/">
+  <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
+</a>
+&nbsp;&nbsp;
+<a href="https://github.com/Gunehee/Starbucks_Seattle">
+  <img src="https://img.shields.io/badge/⌥%20Source%20Code-333333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" height="44">
+</a>
+
+<br><br>
+
+<!-- ── PREVIEW LINK ── -->
+<a href="https://gunehee.github.io/Starbucks_Seattle/map.html">
+  <img src="https://img.shields.io/badge/Click%20to%20explore%20102%20Seattle%20Starbucks%20locations%20→-D4AC5A?style=flat-square&logoColor=0B3D1F" alt="Explore the map">
+</a>
+
+<br><br>
+
+<!-- ── STATS BADGES ── -->
+![Stores](https://img.shields.io/badge/Stores-102-2D8653?style=flat-square)
+![Service Filters](https://img.shields.io/badge/Service%20Filters-4-1A6335?style=flat-square)
+![API Key](https://img.shields.io/badge/API%20Key%20Required-None-D4AC5A?style=flat-square)
+![Framework](https://img.shields.io/badge/Framework-Vanilla%20JS-0B3D1F?style=flat-square)
+
+</div>
 
 ---
 
@@ -11,18 +46,22 @@ Seattle is home to more Starbucks locations per capita than any other U.S. city 
 
 This project visualizes those locations through an interactive web map built with Leaflet.js, allowing users to explore stores by service type, search by neighborhood or address, and access store-specific details including hours of operation and phone numbers.
 
+> **[→ Open the interactive map](https://gunehee.github.io/Starbucks_Seattle/map.html)** to explore all 102 locations now.
+
 ---
 
 ## Features
 
-- **Service type filtering** — Toggle between All Stores, In-Store Only, Drive-Thru Only, and In-Store & Drive-Thru
-- **Real-time search** — Instantly filter the map and store list by name or address as you type
-- **Alphabetical store list** — Scrollable sidebar listing all currently visible locations
-- **Store detail panel** — Slide-in panel displaying address, phone number, and hours of operation for each selected store
-- **Fly-to animation** — Map smoothly pans and zooms to any selected location
-- **Google Maps integration** — One-click directions from any store detail view
-- **Dynamic store count** — Badge updates in real time to reflect the active filter and search state
-- **Zero-dependency deployment** — No API key, no server required; runs directly from a single HTML file
+| Feature | Description |
+|---|---|
+| **Service Type Filtering** | Toggle between All Stores, In-Store Only, Drive-Thru Only, and In-Store & Drive-Thru |
+| **Real-Time Search** | Instantly filter the map and store list by name or address as you type |
+| **Alphabetical Store List** | Scrollable sidebar listing all visible locations — click any to fly the map there |
+| **Store Detail Panel** | Slide-in panel with address, phone, hours, and service type for each store |
+| **Fly-To Animation** | Map smoothly pans and zooms to any selected store |
+| **Google Maps Integration** | One-click "Get Directions" button in every store detail view |
+| **Dynamic Store Count** | Badge updates in real time with the active filter and search state |
+| **Zero-Dependency Deploy** | No API key, no server — open `map.html` directly in any modern browser |
 
 ---
 
@@ -30,15 +69,14 @@ This project visualizes those locations through an interactive web map built wit
 
 **Source:** [Starbucks Locations Worldwide 2021 — Kaggle](https://www.kaggle.com/datasets/kukuroo3/starbucks-locations-worldwide-2021-version?resource=download)
 
-The source dataset contains Starbucks locations worldwide as of 2021. The following cleaning steps were applied to produce the project dataset:
+The source dataset contains worldwide Starbucks locations as of 2021. Cleaning steps applied:
 
-- Filtered to `city = Seattle` and `country_code = US`
-- Removed columns not relevant to the map: brand, ownership type, timezone, and phone country code
-- Removed rows with null or malformed coordinate values
-- Normalized ZIP codes from ZIP+4 format (e.g., `981162812`) to standard 5-digit ZIP (e.g., `98116`)
-- Exported as four GeoJSON files segmented by service type for use in layer filtering
+1. **Filter** — Isolated rows where `city = Seattle` and `country_code = US`
+2. **Clean** — Removed 5 irrelevant columns; dropped rows with null coordinate values
+3. **Normalize** — Converted ZIP+4 codes (e.g., `981162812`) to standard 5-digit ZIP (e.g., `98116`)
+4. **Segment** — Exported four GeoJSON files split by service type for layer filtering
 
-**Final dataset:** 102 store locations across Seattle
+**Final dataset: 102 store locations across Seattle**
 
 | File | Description | Count |
 |---|---|---|
@@ -54,13 +92,13 @@ The source dataset contains Starbucks locations worldwide as of 2021. The follow
 | Technology | Role |
 |---|---|
 | [Leaflet.js v1.9.4](https://leafletjs.com/) | Interactive map rendering |
-| [CartoDB Voyager](https://carto.com/basemaps/) | Base map tile layer |
-| GeoJSON | Store location and attribute data |
-| Vanilla JavaScript (ES6+) | Application logic and interactivity |
-| CSS3 | Layout, animations, and theming |
-| [Google Maps Directions](https://developers.google.com/maps/documentation/urls/get-started) | External directions link (no key required) |
+| [CartoDB Voyager](https://carto.com/basemaps/) | Base map tile layer (no API key) |
+| GeoJSON | Store location and attribute data, embedded inline |
+| Vanilla JavaScript (ES6+) | Filtering, search, and all interactivity |
+| CSS3 | Layout, animations, and Starbucks-themed design |
+| [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started) | Directions deep link (no key required) |
 
-All dependencies are loaded via CDN. No build tools, no framework, no API key.
+All dependencies load via CDN. No build tools, no framework, no API key required.
 
 ---
 
@@ -68,22 +106,23 @@ All dependencies are loaded via CDN. No build tools, no framework, no API key.
 
 ```
 Starbucks_Seattle/
-├── index.html                    # Complete single-file application
-├── README.md                     # Project documentation
+├── index.html                    # Portfolio landing page
+├── map.html                      # Interactive map application  ← main demo
+├── README.md
 ├── Starbucks_Cleaned.csv         # Cleaned source dataset
 ├── Starbucks_Seattle.geojson     # All 102 store locations
-├── in_store.geojson              # In-store only
-├── drive_thru.geojson            # Drive-thru only
-└── both.geojson                  # In-store & drive-thru
+├── in_store.geojson
+├── drive_thru.geojson
+└── both.geojson
 ```
 
-All HTML, CSS, and JavaScript are contained within `index.html`. All GeoJSON data is embedded inline — no external file requests are made at runtime.
+`map.html` is the standalone interactive map — all CSS, JS, and GeoJSON data are embedded inline. `index.html` is the portfolio overview page.
 
 ---
 
 ## Team
 
-This project was developed as a group assignment for **GEOG 495: Digital Geographies** at the **University of Washington**.
+Developed as a group assignment for **GEOG 495: Digital Geographies** at the **University of Washington**.
 
 | Contributor | Responsibilities |
 |---|---|
@@ -92,11 +131,7 @@ This project was developed as a group assignment for **GEOG 495: Digital Geograp
 | **Sophia L.** | Map frame, interactive feature implementation |
 | **Sophia S.** | Data collection, cleaning, and GeoJSON export |
 
----
-
-## Acknowledgements
-
-Special thanks to **Professor Bo Zhao** and **Teaching Assistant Steven Bao** at the University of Washington for their guidance, feedback, and support throughout this project.
+Special thanks to **Professor Bo Zhao** and **Teaching Assistant Steven Bao** at the University of Washington for their guidance and feedback throughout this project.
 
 ---
 
