@@ -9,10 +9,6 @@ Filter by service type, search by address, and get directions — all from a sin
 <br>
 
 <!-- ── DEMO BUTTONS ── -->
-<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
-  <img src="https://img.shields.io/badge/🗺️%20Launch%20Interactive%20Map-0B3D1F?style=for-the-badge&logoColor=white" alt="Launch Map" height="44">
-</a>
-&nbsp;&nbsp;
 <a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/index.html">
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
