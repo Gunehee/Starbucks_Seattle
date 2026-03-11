@@ -17,17 +17,6 @@ Filter by service type, search by address, and get directions — all from a sin
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
 &nbsp;&nbsp;
-<a href="https://github.com/Gunehee/Starbucks_Seattle">
-  <img src="https://img.shields.io/badge/⌥%20Source%20Code-333333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" height="44">
-</a>
-
-<br><br>
-
-<!-- ── PREVIEW LINK ── -->
-<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
-  <img src="https://img.shields.io/badge/Click%20to%20explore%20102%20Seattle%20Starbucks%20locations%20→-D4AC5A?style=flat-square&logoColor=0B3D1F" alt="Explore the map">
-</a>
-
 <br><br>
 
 <!-- ── STATS BADGES ── -->
