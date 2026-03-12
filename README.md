@@ -4,14 +4,16 @@
 ### Interactive Location Finder
 
 **A geospatial web application mapping all 102 Starbucks locations across Seattle, WA.**  
-Filter by service type, search by address, and get directions.
+Filter by service type, search by address, and get directions — all from a single file with no API key.
 
 <br>
 
-<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/index.html">
+<a href="https://gunehee.github.io/Starbucks_Seattle/">
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
+
 <br><br>
+
 </div>
 
 ---
@@ -22,7 +24,7 @@ Seattle is home to more Starbucks locations per capita than any other U.S. city 
 
 This project visualizes those locations through an interactive web map built with Leaflet.js, allowing users to explore stores by service type, search by neighborhood or address, and access store-specific details including hours of operation and phone numbers.
 
-> **[→ Open the interactive map](https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html)** to explore all 102 locations now.
+> **[→ Open the interactive map](https://gunehee.github.io/Starbucks_Seattle/map.html)** to explore all 102 locations now.
 
 ---
 
@@ -73,6 +75,8 @@ The source dataset contains worldwide Starbucks locations as of 2021. Cleaning s
 | Vanilla JavaScript (ES6+) | Filtering, search, and all interactivity |
 | CSS3 | Layout, animations, and Starbucks-themed design |
 | [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started) | Directions deep link (no key required) |
+
+All dependencies load via CDN. No build tools, no framework, no API key required.
 
 ---
 
@@ -139,3 +143,7 @@ Developed as a group assignment for **GEOG 495: Digital Geographies** at the **U
 - Condé Nast Traveler. (n.d.). *Starbucks Reserve Roastery, Seattle*. https://www.cntraveler.com/bars/seattle/starbucks-reserve-roastery
 
 ---
+
+<div align="center">
+<i>GEOG 495 — Digital Geographies · University of Washington · Seattle, WA</i>
+</div>
