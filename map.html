@@ -3,655 +3,177 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Starbucks in Seattle</title>
-
-  <!-- Fonts -->
+  <title>Starbucks in Seattle — Interactive Map</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
   <style>
-    /* ─── CSS Variables ─── */
-    :root {
-      --green-deep:   #0B3D1F;
-      --green-mid:    #1A6335;
-      --green-light:  #2D8653;
-      --green-pale:   #C8E6C9;
-      --gold:         #D4AC5A;
-      --gold-light:   #F5E6C0;
-      --cream:        #FAF7F0;
-      --cream-dark:   #F0EAD6;
-      --text-dark:    #1C1C1C;
-      --text-mid:     #4A4A4A;
-      --text-light:   #888;
-      --white:        #FFFFFF;
-      --panel-width:  380px;
-      --shadow-sm:    0 2px 8px rgba(0,0,0,0.10);
-      --shadow-md:    0 4px 20px rgba(0,0,0,0.15);
-      --shadow-lg:    0 8px 40px rgba(0,0,0,0.20);
-      --radius:       12px;
-      --transition:   0.28s cubic-bezier(0.4,0,0.2,1);
+    :root{
+      --green-deep:#0B3D1F;--green-mid:#1A6335;--green-light:#2D8653;
+      --green-pale:#C8E6C9;--gold:#D4AC5A;--gold-light:#F5E6C0;
+      --cream:#FAF7F0;--cream-dark:#F0EAD6;
+      --text-dark:#1C1C1C;--text-mid:#4A4A4A;--text-light:#888;
+      --white:#FFFFFF;--panel-width:360px;
+      --shadow-md:0 4px 20px rgba(0,0,0,0.15);
+      --shadow-lg:0 8px 40px rgba(0,0,0,0.20);
+      --radius:12px;--transition:0.25s cubic-bezier(0.4,0,0.2,1);
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--green-deep);color:var(--text-dark);overflow:hidden;}
+    #app{display:flex;height:100vh;width:100vw;}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── Side Panel ── */
+    #side-panel{flex:0 0 var(--panel-width);width:var(--panel-width);height:100%;background:var(--cream);display:flex;flex-direction:column;overflow:hidden;z-index:10;box-shadow:4px 0 24px rgba(0,0,0,0.18);}
 
-    html, body {
-      height: 100%;
-      font-family: 'DM Sans', sans-serif;
-      background: var(--green-deep);
-      color: var(--text-dark);
-      overflow: hidden;
-    }
-
-    /* ─── Layout ─── */
-    #app {
-      display: flex;
-      height: 100vh;
-      width: 100vw;
-    }
-
-    /* ─── Side Panel ─── */
-    #side-panel {
-      flex: 0 0 var(--panel-width);
-      width: var(--panel-width);
-      height: 100%;
-      background: var(--cream);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 10;
-      box-shadow: 4px 0 24px rgba(0,0,0,0.18);
-      position: relative;
-    }
-
-    /* Header */
-    .panel-header {
-      background: var(--green-deep);
-      padding: 28px 24px 22px;
-      flex-shrink: 0;
-      position: relative;
-      overflow: hidden;
-    }
-    .panel-header::before {
-      content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 140px; height: 140px;
-      background: radial-gradient(circle, rgba(212,172,90,0.18) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .panel-header .logo-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 6px;
-    }
-    .panel-header .siren-icon {
-      width: 38px; height: 38px;
-      background: var(--gold);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-    .panel-header h1 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: var(--white);
-      line-height: 1.2;
-      letter-spacing: -0.01em;
-    }
-    .panel-header .subtitle {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.55);
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-left: 50px;
-    }
-
-    /* Store count badge */
-    .store-count {
-      position: absolute;
-      top: 24px; right: 20px;
-      background: var(--gold);
-      color: var(--green-deep);
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.04em;
-    }
+    .panel-header{background:var(--green-deep);padding:24px 20px 18px;flex-shrink:0;position:relative;overflow:hidden;}
+    .panel-header::before{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(212,172,90,0.18) 0%,transparent 70%);border-radius:50%;}
+    .logo-row{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+    .siren-icon{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .panel-header h1{font-family:"Playfair Display",serif;font-size:1.35rem;font-weight:700;color:var(--white);line-height:1.2;}
+    .subtitle{font-size:0.72rem;color:rgba(255,255,255,0.5);font-weight:400;letter-spacing:0.08em;text-transform:uppercase;margin-left:48px;}
+    .store-count{position:absolute;top:20px;right:16px;background:var(--gold);color:var(--green-deep);font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:20px;}
 
     /* Search */
-    .search-wrap {
-      padding: 14px 16px 10px;
-      flex-shrink: 0;
-      background: var(--cream);
-      border-bottom: 1px solid var(--cream-dark);
-    }
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      background: var(--white);
-      border: 1.5px solid var(--cream-dark);
-      border-radius: 10px;
-      padding: 9px 14px;
-      transition: border-color var(--transition);
-    }
-    .search-box:focus-within {
-      border-color: var(--green-light);
-      box-shadow: 0 0 0 3px rgba(45,134,83,0.10);
-    }
-    .search-box svg { flex-shrink: 0; color: var(--text-light); }
-    .search-box input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      color: var(--text-dark);
-      background: transparent;
-    }
-    .search-box input::placeholder { color: var(--text-light); }
-    #clear-search {
-      cursor: pointer;
-      color: var(--text-light);
-      font-size: 16px;
-      display: none;
-      background: none; border: none;
-      line-height: 1;
-      padding: 0;
-    }
-    #clear-search.visible { display: block; }
+    .search-wrap{padding:12px 14px 8px;flex-shrink:0;background:var(--cream);border-bottom:1px solid var(--cream-dark);}
+    .search-box{display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--cream-dark);border-radius:10px;padding:8px 12px;transition:border-color var(--transition);}
+    .search-box:focus-within{border-color:var(--green-light);box-shadow:0 0 0 3px rgba(45,134,83,0.10);}
+    .search-box svg{flex-shrink:0;color:var(--text-light);}
+    .search-box input{flex:1;border:none;outline:none;font-family:"DM Sans",sans-serif;font-size:0.875rem;color:var(--text-dark);background:transparent;}
+    .search-box input::placeholder{color:var(--text-light);}
+    #clear-search{cursor:pointer;color:var(--text-light);font-size:14px;display:none;background:none;border:none;line-height:1;padding:0;}
+    #clear-search.visible{display:block;}
 
-    /* Filter Buttons */
-    .filter-section {
-      padding: 12px 16px 10px;
-      flex-shrink: 0;
-      border-bottom: 1px solid var(--cream-dark);
-    }
-    .filter-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
-    }
-    .filter-btns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-    .filter-btn {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 11px;
-      border: 1.5px solid var(--cream-dark);
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--text-mid);
-      background: var(--white);
-      transition: all var(--transition);
-      text-align: left;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-    .filter-btn .dot {
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .filter-btn:hover {
-      border-color: var(--green-light);
-      background: var(--green-pale);
-      color: var(--green-deep);
-    }
-    .filter-btn.active {
-      background: var(--green-deep);
-      border-color: var(--green-deep);
-      color: var(--white);
-    }
-    .filter-btn.active .dot-label { color: inherit; }
+    /* Filters */
+    .filter-section{padding:10px 14px 8px;flex-shrink:0;border-bottom:1px solid var(--cream-dark);}
+    .filter-label{font-size:0.65rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;}
+    .filter-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .filter-btn{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1.5px solid var(--cream-dark);border-radius:8px;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:0.76rem;font-weight:500;color:var(--text-mid);background:var(--white);transition:all var(--transition);text-align:left;white-space:nowrap;}
+    .filter-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .filter-btn:hover{border-color:var(--green-light);background:var(--green-pale);color:var(--green-deep);}
+    .filter-btn.active{background:var(--green-deep);border-color:var(--green-deep);color:var(--white);}
 
     /* Store List */
-    .store-list-wrap {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0;
-    }
-    .store-list-wrap::-webkit-scrollbar { width: 4px; }
-    .store-list-wrap::-webkit-scrollbar-track { background: transparent; }
-    .store-list-wrap::-webkit-scrollbar-thumb { background: var(--cream-dark); border-radius: 4px; }
+    .store-list-wrap{flex:1;overflow-y:auto;padding:0;}
+    .store-list-wrap::-webkit-scrollbar{width:4px;}
+    .store-list-wrap::-webkit-scrollbar-track{background:transparent;}
+    .store-list-wrap::-webkit-scrollbar-thumb{background:var(--cream-dark);border-radius:4px;}
+    .list-section-title{padding:12px 16px 5px;font-size:0.65rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.1em;position:sticky;top:0;background:var(--cream);z-index:1;border-bottom:1px solid var(--cream-dark);}
+    .store-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:background var(--transition);border-bottom:1px solid rgba(0,0,0,0.04);}
+    .store-item:hover{background:var(--gold-light);}
+    .store-item.active{background:var(--green-deep);color:var(--white);}
+    .store-item.active .store-name{color:var(--white);}
+    .store-item.active .store-addr{color:rgba(255,255,255,0.6);}
+    .store-item.active .store-badge{background:var(--gold);color:var(--green-deep);}
+    .store-icon{width:32px;height:32px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+    .store-item.active .store-icon{background:rgba(255,255,255,0.15);}
+    .store-info{flex:1;min-width:0;}
+    .store-name{font-size:0.80rem;font-weight:600;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+    .store-addr{font-size:0.70rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+    .store-badge{font-size:0.60rem;font-weight:600;padding:2px 6px;border-radius:20px;background:var(--green-pale);color:var(--green-deep);flex-shrink:0;text-transform:uppercase;}
+    .no-results{padding:36px 20px;text-align:center;color:var(--text-light);font-size:0.85rem;}
+    .no-results .emoji{font-size:2rem;margin-bottom:8px;}
 
-    .list-section-title {
-      padding: 14px 18px 6px;
-      font-size: 0.68rem;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      position: sticky;
-      top: 0;
-      background: var(--cream);
-      z-index: 1;
-      border-bottom: 1px solid var(--cream-dark);
-    }
+    /* About */
+    .about-wrap{padding:14px 16px;background:var(--green-deep);color:rgba(255,255,255,0.75);flex-shrink:0;}
+    .about-wrap .about-title{font-family:"Playfair Display",serif;font-size:0.8rem;color:var(--gold);margin-bottom:5px;font-weight:600;}
+    .about-wrap p{font-size:0.70rem;line-height:1.6;color:rgba(255,255,255,0.55);}
+    .about-wrap a{color:var(--gold);text-decoration:none;}
+    .about-wrap a:hover{text-decoration:underline;}
 
-    .store-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 18px;
-      cursor: pointer;
-      transition: background var(--transition);
-      border-bottom: 1px solid rgba(0,0,0,0.04);
-      position: relative;
-    }
-    .store-item:hover { background: var(--gold-light); }
-    .store-item.active {
-      background: var(--green-deep);
-      color: var(--white);
-    }
-    .store-item.active .store-name { color: var(--white); }
-    .store-item.active .store-addr { color: rgba(255,255,255,0.6); }
-    .store-item.active .store-badge { background: var(--gold); color: var(--green-deep); }
+    /* Map */
+    #map{flex:1;height:100%;z-index:1;}
 
-    .store-icon {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: var(--green-pale);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-      transition: background var(--transition);
-    }
-    .store-item.active .store-icon { background: rgba(255,255,255,0.15); }
+    /* Detail Panel */
+    #detail-panel{position:fixed;top:0;left:var(--panel-width);width:290px;height:100%;background:var(--white);box-shadow:var(--shadow-lg);z-index:500;transform:translateX(-110%);opacity:0;transition:transform var(--transition),opacity var(--transition);display:flex;flex-direction:column;overflow:hidden;}
+    #detail-panel.open{transform:translateX(0);opacity:1;}
+    .detail-header{background:var(--green-deep);padding:20px 18px 16px;flex-shrink:0;position:relative;}
+    .detail-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.12);border:none;color:var(--white);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background var(--transition);}
+    .detail-close:hover{background:rgba(255,255,255,0.22);}
+    .detail-badge{display:inline-block;font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;padding:3px 8px;border-radius:20px;background:var(--gold);color:var(--green-deep);margin-bottom:8px;}
+    .detail-header h2{font-family:"Playfair Display",serif;font-size:1.05rem;font-weight:700;color:var(--white);line-height:1.3;padding-right:24px;}
+    .detail-body{flex:1;padding:20px 18px;overflow-y:auto;}
+    .detail-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px;}
+    .detail-row-icon{width:32px;height:32px;background:var(--green-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+    .detail-row-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light);margin-bottom:3px;}
+    .detail-row-value{font-size:0.83rem;font-weight:500;color:var(--text-dark);line-height:1.45;white-space:pre-line;}
+    .directions-btn{display:flex;align-items:center;gap:8px;margin-top:4px;padding:10px 16px;background:var(--green-deep);color:var(--white);border:none;border-radius:10px;font-family:"DM Sans",sans-serif;font-size:0.80rem;font-weight:600;cursor:pointer;width:100%;justify-content:center;transition:background var(--transition);}
+    .directions-btn:hover{background:var(--green-mid);}
 
-    .store-info { flex: 1; min-width: 0; }
-    .store-name {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-    .store-addr {
-      font-size: 0.72rem;
-      color: var(--text-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 2px;
-    }
-    .store-badge {
-      font-size: 0.62rem;
-      font-weight: 600;
-      padding: 3px 7px;
-      border-radius: 20px;
-      background: var(--green-pale);
-      color: var(--green-deep);
-      flex-shrink: 0;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
+    /* Popup */
+    .custom-popup .leaflet-popup-content-wrapper{background:var(--green-deep);color:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:0;overflow:hidden;}
+    .custom-popup .leaflet-popup-tip-container{display:none;}
+    .custom-popup .leaflet-popup-close-button{display:none;}
+    .custom-popup .leaflet-popup-content{margin:0;width:210px!important;}
+    .popup-inner{padding:13px 15px;}
+    .popup-name{font-family:"Playfair Display",serif;font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:5px;line-height:1.3;}
+    .popup-addr{font-size:0.72rem;color:rgba(255,255,255,0.65);line-height:1.5;}
+    .popup-hours{font-size:0.68rem;color:var(--gold);margin-top:4px;font-weight:500;}
+    .popup-footer{background:rgba(255,255,255,0.08);padding:7px 15px;font-size:0.65rem;color:rgba(255,255,255,0.5);text-align:center;cursor:pointer;}
+    .popup-footer:hover{background:rgba(255,255,255,0.14);color:var(--white);}
 
-    .no-results {
-      padding: 40px 20px;
-      text-align: center;
-      color: var(--text-light);
-      font-size: 0.85rem;
-    }
-    .no-results .emoji { font-size: 2rem; margin-bottom: 8px; }
+    /* Legend */
+    #map-legend{position:absolute;bottom:28px;right:14px;z-index:400;background:rgba(255,255,255,0.95);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow-md);font-size:0.70rem;pointer-events:none;}
+    #map-legend .legend-title{font-weight:700;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-mid);margin-bottom:7px;}
+    .legend-row{display:flex;align-items:center;gap:7px;margin-bottom:4px;color:var(--text-mid);}
+    .legend-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.8);flex-shrink:0;}
 
-    /* About section */
-    .about-wrap {
-      padding: 16px 18px;
-      background: var(--green-deep);
-      color: rgba(255,255,255,0.75);
-      flex-shrink: 0;
-    }
-    .about-wrap .about-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 0.82rem;
-      color: var(--gold);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    .about-wrap p {
-      font-size: 0.72rem;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.6);
-    }
-
-    /* ─── Map ─── */
-    #map {
-      flex: 1;
-      height: 100%;
-      z-index: 1;
-    }
-
-    /* ─── Detail Overlay (slides over map) ─── */
-    #detail-panel {
-      position: fixed;
-      top: 0;
-      left: var(--panel-width);
-      width: 300px;
-      height: 100%;
-      background: var(--white);
-      box-shadow: var(--shadow-lg);
-      z-index: 500;
-      transform: translateX(-100%);
-      opacity: 0;
-      transition: transform var(--transition), opacity var(--transition);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    #detail-panel.open {
-      transform: translateX(0);
-      opacity: 1;
-    }
-
-    .detail-header {
-      background: var(--green-deep);
-      padding: 22px 20px 18px;
-      flex-shrink: 0;
-      position: relative;
-    }
-    .detail-close {
-      position: absolute;
-      top: 14px; right: 14px;
-      background: rgba(255,255,255,0.12);
-      border: none;
-      color: var(--white);
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 15px;
-      display: flex; align-items: center; justify-content: center;
-      transition: background var(--transition);
-    }
-    .detail-close:hover { background: rgba(255,255,255,0.22); }
-
-    .detail-badge {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 3px 9px;
-      border-radius: 20px;
-      background: var(--gold);
-      color: var(--green-deep);
-      margin-bottom: 10px;
-    }
-    .detail-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--white);
-      line-height: 1.3;
-    }
-
-    .detail-body {
-      flex: 1;
-      padding: 22px 20px;
-      overflow-y: auto;
-    }
-    .detail-row {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 18px;
-    }
-    .detail-row-icon {
-      width: 34px; height: 34px;
-      background: var(--green-pale);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-    .detail-row-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-light);
-      margin-bottom: 3px;
-    }
-    .detail-row-value {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-dark);
-      line-height: 1.45;
-    }
-
-    .directions-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding: 11px 18px;
-      background: var(--green-deep);
-      color: var(--white);
-      border: none;
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      justify-content: center;
-      transition: background var(--transition);
-    }
-    .directions-btn:hover { background: var(--green-mid); }
-
-    /* ─── Leaflet overrides ─── */
-    .leaflet-container { font-family: 'DM Sans', sans-serif; }
-
-    .custom-popup .leaflet-popup-content-wrapper {
-      background: var(--green-deep);
-      color: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
-      padding: 0;
-      overflow: hidden;
-    }
-    .custom-popup .leaflet-popup-tip-container { display: none; }
-    .custom-popup .leaflet-popup-close-button { display: none; }
-    .custom-popup .leaflet-popup-content {
-      margin: 0;
-      width: 200px !important;
-    }
-    .popup-inner {
-      padding: 14px 16px;
-    }
-    .popup-inner .popup-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 6px;
-      line-height: 1.3;
-    }
-    .popup-inner .popup-addr {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.65);
-      line-height: 1.5;
-    }
-    .popup-inner .popup-hours {
-      font-size: 0.72rem;
-      color: var(--gold);
-      margin-top: 5px;
-      font-weight: 500;
-    }
-    .popup-footer {
-      background: rgba(255,255,255,0.08);
-      padding: 8px 16px;
-      font-size: 0.68rem;
-      color: rgba(255,255,255,0.5);
-      text-align: center;
-      cursor: pointer;
-    }
-    .popup-footer:hover { background: rgba(255,255,255,0.14); color: var(--white); }
-
-    /* Attribution */
-    .leaflet-control-attribution {
-      font-size: 10px;
-      background: rgba(255,255,255,0.8) !important;
-    }
-
-    /* Marker cluster */
-    .starbucks-marker {
-      width: 28px; height: 28px;
-      background: var(--green-mid);
-      border: 2.5px solid var(--white);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      transition: transform 0.15s ease, background 0.15s ease;
-      cursor: pointer;
-    }
-    .starbucks-marker.drive-thru { background: #1A6335; }
-    .starbucks-marker.both-type  { background: #0B3D1F; border-color: var(--gold); }
-    .starbucks-marker:hover, .starbucks-marker.selected {
-      transform: scale(1.35);
-      background: var(--gold);
-    }
-
-    /* Layer legend */
-    #map-legend {
-      position: absolute;
-      bottom: 32px; right: 16px;
-      z-index: 400;
-      background: rgba(255,255,255,0.95);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      box-shadow: var(--shadow-md);
-      font-size: 0.72rem;
-      pointer-events: none;
-    }
-    #map-legend .legend-title {
-      font-weight: 700;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-mid);
-      margin-bottom: 8px;
-    }
-    .legend-row {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 5px;
-      color: var(--text-mid);
-    }
-    .legend-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.8);
-      flex-shrink: 0;
-    }
-
-    /* Responsive */
-    @media (max-width: 680px) {
-      :root { --panel-width: 100vw; }
-      #side-panel { position: fixed; bottom: 0; left: 0; right: 0; height: 48vh; width: 100vw; z-index: 20; }
-      #map { height: 52vh; position: fixed; top: 0; left: 0; right: 0; }
-      #detail-panel { left: 0; top: auto; bottom: 0; height: 55vh; width: 100%; transform: translateY(100%); opacity: 0; }
-      #detail-panel.open { transform: translateY(0); opacity: 1; }
+    @media(max-width:680px){
+      :root{--panel-width:100vw;}
+      #side-panel{position:fixed;bottom:0;left:0;right:0;height:46vh;width:100vw;z-index:20;}
+      #map{height:54vh;position:fixed;top:0;left:0;right:0;}
+      #detail-panel{left:0;top:auto;bottom:0;height:55vh;width:100%;transform:translateY(110%);opacity:0;}
+      #detail-panel.open{transform:translateY(0);opacity:1;}
+      #map-legend{display:none;}
     }
   </style>
 </head>
-
 <body>
 <div id="app">
-
-  <!-- ── Side Panel ── -->
   <aside id="side-panel">
-
-    <!-- Header -->
     <div class="panel-header">
       <div class="logo-row">
         <div class="siren-icon">☕</div>
         <h1>Starbucks<br>in Seattle</h1>
       </div>
       <div class="subtitle">Seattle, Washington</div>
-      <span class="store-count" id="store-count-badge">107 stores</span>
+      <span class="store-count" id="store-count-badge">102 stores</span>
     </div>
-
-    <!-- Search -->
     <div class="search-wrap">
       <div class="search-box">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="search-input" placeholder="Search stores or neighborhoods…">
         <button id="clear-search" title="Clear">✕</button>
       </div>
     </div>
-
-    <!-- Filters -->
     <div class="filter-section">
       <div class="filter-label">Service Type</div>
       <div class="filter-btns">
-        <button class="filter-btn active" data-layer="all" id="btn-all">
-          <span class="dot" style="background:#2D8653"></span>All Stores
-        </button>
-        <button class="filter-btn" data-layer="inStore" id="btn-inStore">
-          <span class="dot" style="background:#5FAD72"></span>In-Store
-        </button>
-        <button class="filter-btn" data-layer="driveThru" id="btn-driveThru">
-          <span class="dot" style="background:#1A6335"></span>Drive-Thru
-        </button>
-        <button class="filter-btn" data-layer="both" id="btn-both">
-          <span class="dot" style="background:#0B3D1F;border:1.5px solid #D4AC5A"></span>In-store & Drive
-        </button>
+        <button class="filter-btn active" data-layer="all"><span class="dot" style="background:#2D8653"></span>All Stores</button>
+        <button class="filter-btn" data-layer="inStore"><span class="dot" style="background:#5FAD72"></span>In-Store</button>
+        <button class="filter-btn" data-layer="driveThru"><span class="dot" style="background:#1A6335"></span>Drive-Thru</button>
+        <button class="filter-btn" data-layer="both"><span class="dot" style="background:#0B3D1F;border:1.5px solid #D4AC5A"></span>In-Store & Drive</button>
       </div>
     </div>
-
-    <!-- Store List -->
     <div class="store-list-wrap">
       <div class="list-section-title" id="list-title">All Locations</div>
       <div id="store-list"></div>
     </div>
-
-    <!-- About -->
     <div class="about-wrap">
       <div class="about-title">About this Map</div>
-      <p>With 107 locations, Starbucks is Seattle's most common chain store. Click any marker or store name to explore details. Filter by service type using the buttons above.</p>
+      <p>102 Starbucks locations across Seattle. Click any marker or store name to view details and get directions.<br>
+      <a href="index.html">← Back to project overview</a></p>
     </div>
-
   </aside>
 
-  <!-- ── Map ── -->
   <div id="map"></div>
 
-  <!-- ── Map Legend ── -->
   <div id="map-legend">
     <div class="legend-title">Store Type</div>
-    <div class="legend-row"><div class="legend-dot" style="background:#2D8653"></div>All / In-Store</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#2D8653"></div>In-Store Only</div>
     <div class="legend-row"><div class="legend-dot" style="background:#1A6335"></div>Drive-Thru Only</div>
-    <div class="legend-row"><div class="legend-dot" style="background:#0B3D1F;border-color:#D4AC5A"></div>In-Store & Drive</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#0B3D1F;border-color:#D4AC5A"></div>In-Store &amp; Drive-Thru</div>
   </div>
 
-  <!-- ── Detail Panel ── -->
   <div id="detail-panel">
     <div class="detail-header">
       <button class="detail-close" id="detail-close">✕</button>
@@ -661,380 +183,226 @@
     <div class="detail-body">
       <div class="detail-row">
         <div class="detail-row-icon">📍</div>
-        <div>
-          <div class="detail-row-label">Address</div>
-          <div class="detail-row-value" id="detail-address">—</div>
-        </div>
+        <div><div class="detail-row-label">Address</div><div class="detail-row-value" id="detail-address">—</div></div>
       </div>
       <div class="detail-row">
         <div class="detail-row-icon">📞</div>
-        <div>
-          <div class="detail-row-label">Phone</div>
-          <div class="detail-row-value" id="detail-phone">—</div>
-        </div>
+        <div><div class="detail-row-label">Phone</div><div class="detail-row-value" id="detail-phone">—</div></div>
       </div>
       <div class="detail-row">
         <div class="detail-row-icon">🕐</div>
-        <div>
-          <div class="detail-row-label">Hours</div>
-          <div class="detail-row-value" id="detail-hours">—</div>
-        </div>
+        <div><div class="detail-row-label">Hours</div><div class="detail-row-value" id="detail-hours">—</div></div>
       </div>
-      <button class="directions-btn" id="directions-btn">
-        <span>↗</span> Get Directions
-      </button>
+      <button class="directions-btn" id="directions-btn">↗ Get Directions</button>
     </div>
   </div>
-
 </div>
 
-<!-- Leaflet JS (free, no API key) -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
-// ═══════════════════════════════════════════════
-//  EMBEDDED GEOJSON DATA (no server fetch needed)
-// ═══════════════════════════════════════════════
-const GEODATA = {
-  all: {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"Name":"Downtown: Columbia Center","description":"701 5th Ave<br>Seattle, WA 98104<br>(206) 447-9934<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.329856,47.604418]}},{"type":"Feature","properties":{"Name":"Downtown: Pioneer Square","description":"102 1st Ave S<br>Seattle, WA 98104<br>(206) 382-2656<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.334196,47.601733]}},{"type":"Feature","properties":{"Name":"Downtown: 5th Ave","description":"505 5th Ave S # 120<br>Seattle, WA 98104<br>(206) 381-8965<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.328228,47.597614]}},{"type":"Feature","properties":{"Name":"Downtown: One Union Square","description":"600 University St<br>Seattle, WA 98101<br>(206) 343-7199<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.33265,47.609157]}},{"type":"Feature","properties":{"Name":"Downtown: Fourth & Seneca","description":"1125 4th Ave<br>Seattle, WA 98101<br>(206) 623-0860<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.333739,47.606944]}},{"type":"Feature","properties":{"Name":"Pike Place","description":"1912 Pike Pl<br>Seattle, WA 98101<br>(206) 448-8762<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.342298,47.609748]}},{"type":"Feature","properties":{"Name":"Metropolitan Park","description":"1220 Howell St<br>Seattle, WA 98101<br>(206) 262-0278<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.3304,47.617003]}},{"type":"Feature","properties":{"Name":"Downtown: 3rd Ave","description":"1301 3rd Ave<br>Seattle, WA 98101<br>(206) 621-9627<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.336026,47.607752]}},{"type":"Feature","properties":{"Name":"Downtown: Pine & 7th","description":"721 Pine St<br>Seattle, WA 98101<br>(206) 264-8921<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.334049,47.612661]}},{"type":"Feature","properties":{"Name":"Downtown: 2nd Ave","description":"1191 2nd Ave # 130<br>Seattle, WA 98101<br>(206) 652-8496<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.336392,47.606488]}},{"type":"Feature","properties":{"Name":"Downtown: Swedish Medical Center","description":"1101 Madison St<br>Seattle, WA 98104<br>(206) 624-0281<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.325076,47.609331]}},{"type":"Feature","properties":{"Name":"Downtown: Starbucks Coffee","description":"211 Lenora St<br>Seattle, WA 98121<br>(206) 441-1388<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.342958,47.612582]}},{"type":"Feature","properties":{"Name":"Downtown: Plaza 600 Building","description":"600 Stewart St # 600<br>Seattle, WA 98101<br>(206) 441-6898<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.337019,47.613637]}},{"type":"Feature","properties":{"Name":"Central District: 23d & Jackson","description":"2300 S Jackson St<br>Seattle, WA 98144<br>(206) 726-0502<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.302238,47.599295]}},{"type":"Feature","properties":{"Name":"Downtown: Puget Sound Plaza","description":"1325 4th Ave<br>Seattle, WA 98101<br>(206) 623-5427<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.335118,47.608437]}},{"type":"Feature","properties":{"Name":"Downtown: Madison","description":"1301 Madison St<br>Seattle, WA 98104<br>(206) 254-1336<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.322916,47.610271]}},{"type":"Feature","properties":{"Name":"Downtown: 4th & Occidental","description":"400 Occidental Ave S<br>Seattle, WA 98104<br>(206) 624-2561<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.332859,47.59919]}},{"type":"Feature","properties":{"Name":"Belltown: 23rd & 1st","description":"2326 1st Ave<br>Seattle, WA 98121<br>(206) 956-4322<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.347194,47.613942]}},{"type":"Feature","properties":{"Name":"Downtown: Alaskan Way","description":"2200 Alaskan Way # 120<br>Seattle, WA 98121<br>(206) 448-9304<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.347647,47.610817]}},{"type":"Feature","properties":{"Name":"Central District: 22nd & Madison","description":"2201 E Madison St<br>Seattle, WA 98112<br>(206) 323-0331<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.303619,47.618388]}},{"type":"Feature","properties":{"Name":"Mt. Baker: 29th & MLK","description":"2921 Martin Luther King Jr S<br>Seattle, WA 98144<br>(206) 721-1543<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.296324,47.577108]}},{"type":"Feature","properties":{"Name":"S Lake Union: 12th & Dexter","description":"1211 Dexter Ave N<br>Seattle, WA 98109<br>(206) 283-2211<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.342349,47.629822]}},{"type":"Feature","properties":{"Name":"Capitol Hill: 16th & Olive","description":"1600 E Olive Way<br>Seattle, WA 98102<br>(206) 568-5185<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.325007,47.619312]}},{"type":"Feature","properties":{"Name":"West Seattle: Alki Ave","description":"2742 Alki Ave SW, Seattle, WA<br>(206) 381-0638<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.411012,47.578978]}},{"type":"Feature","properties":{"Name":"Downtown: Seattle Trust","description":"1000 2nd Ave # 101<br>Seattle, WA 98104<br>(206) 382-1688<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.335097,47.605175]}},{"type":"Feature","properties":{"Name":"Downtown: 5th & Pine","description":"515 Pine St<br>Seattle, WA 98101<br>(206) 382-1201<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.336338,47.611703]}},{"type":"Feature","properties":{"Name":"Downtown: 3rd Ave","description":"1111 3rd Ave<br>Seattle, WA 98101<br>(206) 442-9645<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.334778,47.6064]}},{"type":"Feature","properties":{"Name":"Rainier Valley: Rainier Plaza","description":"3820 Rainier Ave S # A1<br>Seattle, WA 98118<br>(206) 723-4143<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.290341,47.569397]}},{"type":"Feature","properties":{"Name":"Madison Park: 40th & Madison","description":"4000 E Madison St<br>Seattle, WA 98112<br>(206) 329-3736<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.28104,47.633861]}},{"type":"Feature","properties":{"Name":"Madrona: Lakeside Ave","description":"121 Lakeside Ave<br>Seattle, WA 98122<br>(206) 720-4803<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.285304,47.601831]}},{"type":"Feature","properties":{"Name":"First Hill: 12th & Columbia","description":"800 12th Ave<br>Seattle, WA 98122<br>(206) 215-2601<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.316759,47.609211]}},{"type":"Feature","properties":{"Name":"Downtown: 5th Ave","description":"1420 5th Ave # 111<br>Seattle, WA 98101<br>(206) 381-3743<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.334848,47.609878]}},{"type":"Feature","properties":{"Name":"Rainier Valley: 48th & Rainier","description":"4824 Rainier Ave S<br>Seattle, WA 98118<br>(206) 721-8871<br>6am - 4pm"},"geometry":{"type":"Point","coordinates":[-122.285687,47.559057]}},{"type":"Feature","properties":{"Name":"Downtown: Pacific Place","description":"600 Pike St<br>Seattle, WA 98101<br>(206) 264-1607<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.33452,47.611148]}},{"type":"Feature","properties":{"Name":"Capitol Hill: Broadway","description":"434 Broadway E<br>Seattle, WA 98102<br>(206) 323-7888<br>5am - 7:30pm"},"geometry":{"type":"Point","coordinates":[-122.320904,47.622379]}},{"type":"Feature","properties":{"Name":"Queen Anne: Queen Anne Ave","description":"425 Queen Anne Ave N<br>Seattle, WA 98109<br>(206) 691-3396<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.356773,47.622405]}},{"type":"Feature","properties":{"Name":"Downtown: 6th & Denny","description":"620 Denny Way<br>Seattle, WA 98109<br>(206) 956-0408<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.344776,47.618557]}},{"type":"Feature","properties":{"Name":"Int D: 1st Ave","description":"1962 1st Ave S<br>Seattle, WA 98134<br>(206) 624-6045<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.334174,47.58567]}},{"type":"Feature","properties":{"Name":"S Lake Union: Westlake Ave","description":"1200 Westlake Ave N<br>Seattle, WA 98109<br>(206) 216-0306<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.340986,47.629787]}},{"type":"Feature","properties":{"Name":"Wallingford: 45th St","description":"2110 N 45th St<br>Seattle, WA 98103<br>(206) 548-9507<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.333107,47.661451]}},{"type":"Feature","properties":{"Name":"Capitol Hill: 15th Ave","description":"328 15th Ave E<br>Seattle, WA 98112<br>(206) 323-1568<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.312508,47.621341]}},{"type":"Feature","properties":{"Name":"Downtown: 1st Ave","description":"823 1st Ave S<br>Seattle, WA 98134<br>(206) 340-9184<br>6:30am - 2pm"},"geometry":{"type":"Point","coordinates":[-122.335516,47.60381]}},{"type":"Feature","properties":{"Name":"Downtown: Alaskan Way","description":"1101 Alaskan Way # 102<br>Seattle, WA 98101<br>(206) 554-7060<br>6am - 8pm"},"geometry":{"type":"Point","coordinates":[-122.339126,47.604478]}},{"type":"Feature","properties":{"Name":"Univ D: 45th & University Way","description":"4555 University Way NE<br>Seattle, WA 98105<br>(206) 634-1390<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.313114,47.66229]}},{"type":"Feature","properties":{"Name":"Downtown: 4th & Blanchard","description":"2101 4th Ave # 150<br>Seattle, WA 98121<br>(206) 728-0883<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.341378,47.613796]}},{"type":"Feature","properties":{"Name":"Queen Anne: Queen Anne Ave","description":"2135 Queen Anne Ave N<br>Seattle, WA 98109<br>(206) 301-9477<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.356959,47.637596]}},{"type":"Feature","properties":{"Name":"Downtown: 3rd Ave","description":"999 3rd Ave<br>Seattle, WA 98104<br>(206) 748-0058<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.33402,47.605595]}},{"type":"Feature","properties":{"Name":"Ravenna: 64th & 12th","description":"6417 12th Ave NE<br>Seattle, WA 98115<br>(206) 526-7230<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.315683,47.675117]}},{"type":"Feature","properties":{"Name":"Queen Anne: Elliott Ave","description":"1144 Elliott Ave W<br>Seattle, WA 98119<br>(206) 283-9629<br>7am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.372145,47.629479]}},{"type":"Feature","properties":{"Name":"West Seattle: 41st & Admiral","description":"4101 SW Admiral Way<br>Seattle, WA 98116<br>(206) 937-5010<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.383912,47.581174]}},{"type":"Feature","properties":{"Name":"Downtown: 7th Ave","description":"1700 7th Ave<br>Seattle, WA 98101<br>(206) 382-0636<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.335168,47.613592]}},{"type":"Feature","properties":{"Name":"Phinney Ridge: 67th St","description":"316 N 67th St<br>Seattle, WA 98103<br>(206) 781-4153<br>6am - 8pm"},"geometry":{"type":"Point","coordinates":[-122.355032,47.677839]}},{"type":"Feature","properties":{"Name":"Northgate: Northgate Way","description":"2137 N Northgate Way<br>Seattle, WA 98133<br>(206) 417-1403<br>6am - 8pm"},"geometry":{"type":"Point","coordinates":[-122.333012,47.708654]}},{"type":"Feature","properties":{"Name":"Downtown: Seattle Center Kiosk","description":"305 Harrison St<br>Seattle, WA 98109<br>(206) 728-4077<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.348438,47.621985]}},{"type":"Feature","properties":{"Name":"Queen Anne: Dravus St","description":"1607 W Dravus St<br>Seattle, WA 98119<br>(206) 285-6230<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.377598,47.648454]}},{"type":"Feature","properties":{"Name":"Downtown: Terry Ave","description":"442 Terry Ave N<br>Seattle, WA 98121<br>(206) 223-2173<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.336405,47.617958]}},{"type":"Feature","properties":{"Name":"Magnolia: McGraw St","description":"3300 W McGraw St<br>Seattle, WA 98199<br>(206) 298-3390<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.399674,47.639583]}},{"type":"Feature","properties":{"Name":"Univ D: U Village","description":"2650 NE 49th St<br>Seattle, WA 98105<br>(206) 522-6410<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.299687,47.662663]}},{"type":"Feature","properties":{"Name":"West Seattle: Fauntleroy","description":"4408 Fauntleroy Way SW<br>Seattle, WA<br>(206) 728-4077<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.377787,47.563977]}},{"type":"Feature","properties":{"Name":"Univ D: 41st & University Way","description":"4147 University Way NE<br>Seattle, WA 98105<br>(206) 547-3280<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.313312,47.658226]}},{"type":"Feature","properties":{"Name":"Ballard: 22nd & Market","description":"2204 NW Market St<br>Seattle, WA 98107<br>(206) 782-2795<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.384824,47.668705]}},{"type":"Feature","properties":{"Name":"Green Lake: 71st & Green Lake","description":"7100 E Green Lake Dr N<br>Seattle, WA 98115<br>(206) 523-9594<br>5:30am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.325668,47.679741]}},{"type":"Feature","properties":{"Name":"West Seattle: California & Fauntleroy","description":"6501 California Ave SW<br>Seattle, WA 98136<br>(206) 938-6371<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.387347,47.544688]}},{"type":"Feature","properties":{"Name":"Crown Hill: Holman Rd","description":"9999 Holman Rd NW<br>Seattle, WA 98117<br>(206) 783-8104<br>5:30am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.362198,47.70171]}},{"type":"Feature","properties":{"Name":"Eastlake: 23rd & Eastlake","description":"2344 Eastlake Ave E<br>Seattle, WA 98102<br>(206) 324-5144<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.325871,47.64076]}},{"type":"Feature","properties":{"Name":"Montlake: 38th & Montlake Blvd","description":"3850 Montlake Blvd NE # 315<br>Seattle, WA 98195<br>(206) 362-3704<br>5:30am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.303442,47.65182]}},{"type":"Feature","properties":{"Name":"Fremont: 34th & Fremont","description":"3415 Fremont Ave N # B<br>Seattle, WA 98103<br>(206) 633-3706<br>6am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.349819,47.649703]}},{"type":"Feature","properties":{"Name":"Downtown: 6th & Union","description":"601 Union St # 224B<br>Seattle, WA 98101<br>(206) 264-2534<br>6am - 8pm"},"geometry":{"type":"Point","coordinates":[-122.333576,47.610121]}},{"type":"Feature","properties":{"Name":"West Seattle: 26th & California Ave SW","description":"2622 California Ave SW<br>Seattle, WA 98116<br>(206) 937-5112<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.386553,47.580756]}},{"type":"Feature","properties":{"Name":"Wedgewood: 73rd & 35th","description":"7303 35th Ave NE<br>Seattle, WA 98115<br>(206) 517-2877<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.370751,47.660342]}},{"type":"Feature","properties":{"Name":"Rainier Valley","description":"9162 Rainier Ave S<br>Seattle, WA 98118<br>(206) 494-1120<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.269973,47.520933]}},{"type":"Feature","properties":{"Name":"QFC Starbucks - 25th Ave SW","description":"9023 25th Ave SW<br>Seattle, WA 98106<br>(206) 937-1732<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.364591,47.522446]}},{"type":"Feature","properties":{"Name":"Lake City: 120th & Lake City Way","description":"12001 Lake City Way NE<br>Seattle, WA 98125<br>(206) 364-2490<br>6am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.297369,47.715637]}},{"type":"Feature","properties":{"Name":"Northgate: Northgate Mall","description":"301 NE Northgate Way # 550<br>Seattle, WA 98125<br>(206) 306-8525<br>5am - 4:30pm"},"geometry":{"type":"Point","coordinates":[-122.325957,47.708584]}},{"type":"Feature","properties":{"Name":"Northgate: Northgate Way","description":"540 NE Northgate Way # A<br>Seattle, WA 98125<br>(206) 367-6651<br>5am - 4:30pm"},"geometry":{"type":"Point","coordinates":[-122.322133,47.708605]}},{"type":"Feature","properties":{"Name":"Downtown: King St","description":"83 S King St<br>Seattle, WA 98104<br>(206) 342-6400<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.334435,47.598288]}},{"type":"Feature","properties":{"Name":"Capitol Hill: 14th & Broadway","description":"1401 Broadway<br>Seattle, WA 98122<br>(206) 860-3818<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.320823,47.61299]}},{"type":"Feature","properties":{"Name":"Ballard: NW Market St","description":"1423 NW Market St<br>Seattle, WA 98107<br>(206) 784-6480<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.374269,47.668648]}},{"type":"Feature","properties":{"Name":"Central District: James Tower","description":"550 17th Ave # 190<br>Seattle, WA 98122<br>(206) 325-6750<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.310214,47.606527]}},{"type":"Feature","properties":{"Name":"Capitol Hill: 14th & John","description":"1410 E John St<br>Seattle, WA 98112<br>(206) 323-4988<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.313805,47.619955]}},{"type":"Feature","properties":{"Name":"Haller Lake: 130th & Aurora","description":"13035 Aurora Ave N<br>Seattle, WA 98133<br>(206) 368-9366<br>5:30am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.345047,47.723473]}},{"type":"Feature","properties":{"Name":"Crown Hill: 15th Ave NW","description":"8340 15th Ave NW<br>Seattle, WA 98117<br>(206) 782-7464<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.376758,47.689497]}},{"type":"Feature","properties":{"Name":"Queen Anne: 1st Ave W","description":"516 1st Ave W<br>Seattle, WA 98119<br>(206) 494-1685<br>7am - 5pm"},"geometry":{"type":"Point","coordinates":[-122.358017,47.623512]}},{"type":"Feature","properties":{"Name":"Mt. Baker: 27th & Rainier","description":"2707 Rainier Ave S<br>Seattle, WA 98144<br>(206) 725-2418<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.29882,47.579161]}},{"type":"Feature","properties":{"Name":"145th & 15th","description":"14359 15th Ave NE<br>Seattle, WA 98125<br>(206) 366-2707<br>5:30am - 4:30pm"},"geometry":{"type":"Point","coordinates":[-122.312769,47.733198]}},{"type":"Feature","properties":{"Name":"Fremont: NW 45th St","description":"915 NW 45th St<br>Seattle, WA 98107<br>(206) 789-9322<br>6am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.368917,47.661467]}},{"type":"Feature","properties":{"Name":"Harbor Island: SW Klickitat","description":"1021 SW Klickitat Way<br>Seattle, WA 98134<br>(206) 903-6929<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.347669,47.570571]}},{"type":"Feature","properties":{"Name":"Arbor Heights: 28th Ave SW","description":"9620 28th Ave SW<br>Seattle, WA 98126<br>(206) 935-3996<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.368603,47.517261]}},{"type":"Feature","properties":{"Name":"West Seattle: 42nd Ave SW","description":"4704 42nd Ave SW<br>Seattle, WA 98116<br>(206) 938-6097<br>5:30am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.385461,47.560982]}},{"type":"Feature","properties":{"Name":"Wallingford: 12th & 45th","description":"1218 N 45th St<br>Seattle, WA 98103<br>(206) 545-6945<br>6am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.343206,47.661468]}},{"type":"Feature","properties":{"Name":"Lake City: 143rd & Lake City Way","description":"14330 Lake City Way NE<br>Seattle, WA 98125<br>(206) 440-3366<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.292402,47.732502]}},{"type":"Feature","properties":{"Name":"QFC Starbucks - SW Barton","description":"2500 SW Barton<br>Seattle, WA 98126<br>(206) 935-0585<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.364553,47.521045]}},{"type":"Feature","properties":{"Name":"Barton Starbucks","description":"2600 SW Barton St<br>Seattle, WA 98126<br>(206) 935-0585<br>5am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.365902,47.521055]}},{"type":"Feature","properties":{"Name":"Greenwood: 87th & Greenwood","description":"8704 Greenwood Ave N<br>Seattle, WA 98103<br>(206) 494-0433<br>6am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.355288,47.692529]}},{"type":"Feature","properties":{"Name":"QFC Starbucks - Roosevelt Way","description":"11100 Roosevelt Way NE<br>Seattle, WA 98125<br>(206) 361-4849<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.317827,47.70937]}},{"type":"Feature","properties":{"Name":"Univ D: University Village","description":"4634 26th Ave NE<br>Seattle, WA 98105<br>(206) 522-5228<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.29955,47.669245]}},{"type":"Feature","properties":{"Name":"Int Dist: 24th & Utah","description":"2401 Utah Ave S<br>Seattle, WA 98134<br>(206) 447-1575<br>5am - 6pm"},"geometry":{"type":"Point","coordinates":[-122.335134,47.581893]}},{"type":"Feature","properties":{"Name":"Downtown: Us Bank Centre Store","description":"1420 5th Ave<br>Seattle, WA 98101<br>(206) 467-0972<br>6am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.334848,47.609878]}},{"type":"Feature","properties":{"Name":"Queen Anne: Seattle Trust","description":"1000 2nd Avenue 120 N<br>Seattle, WA 98101<br>(206) 382-1688<br>6am - 7pm"},"geometry":{"type":"Point","coordinates":[-122.352842,47.618829]}},{"type":"Feature","properties":{"Name":"SODO: S Michigan St","description":"601 S Michigan St<br>Seattle, WA 98108<br>Call for hours"},"geometry":{"type":"Point","coordinates":[-122.32563,47.546162]}},{"type":"Feature","properties":{"Name":"Columbia City: S Othello St","description":"3900 S Othello St<br>Seattle, WA 98118<br>Call for hours"},"geometry":{"type":"Point","coordinates":[-122.28307,47.537471]}},{"type":"Feature","properties":{"Name":"Sand Point: Sand Point Way NE","description":"4800 Sand Point Way NE<br>Seattle, WA 98105<br>Call for hours"},"geometry":{"type":"Point","coordinates":[-122.28093,47.662275]}},{"type":"Feature","properties":{"Name":"SODO: 4th Avenue S","description":"4115 4th Avenue S<br>Seattle, WA 98134<br>Call for hours"},"geometry":{"type":"Point","coordinates":[-122.32964,47.566563]}},{"type":"Feature","properties":{"Name":"Columbia City: MLK Way S","description":"6310 Martin Luther King Jr Way S<br>Seattle, WA 98118<br>Call for hours"},"geometry":{"type":"Point","coordinates":[-122.2851,47.545883]}}]},
-  driveThruNames: new Set(["Mt. Baker: 29th & MLK","West Seattle: Fauntleroy"]),
-  bothNames: new Set(["S Lake Union: 12th & Dexter","Madison Park: 40th & Madison","S Lake Union: Westlake Ave","Capitol Hill: 15th Ave","Queen Anne: Elliott Ave","Phinney Ridge: 67th St","Northgate: Northgate Way","Downtown: Seattle Center Kiosk","Queen Anne: Dravus St","Downtown: Terry Ave","Magnolia: McGraw St","Haller Lake: 130th & Aurora","145th & 15th","Harbor Island: SW Klickitat","Lake City: 143rd & Lake City Way"])
-};
+// ── DATA (102 features, deduplicated names, offset duplicate coords) ──
+const FEATURES = [{"id":0,"displayName":"Downtown: Columbia Center","description":"701 5th Ave<br>Seattle, WA 98104<br>(206) 447-9934<br>5am - 6pm","serviceType":"inStore","coords":[-122.329856,47.604418]},{"id":1,"displayName":"Downtown: Pioneer Square","description":"102 1st Ave S<br>Seattle, WA 98104<br>(206) 382-2656<br>5am - 6pm","serviceType":"inStore","coords":[-122.334196,47.601733]},{"id":2,"displayName":"Downtown: 5th Ave (505 5th Ave S # 120)","description":"505 5th Ave S # 120<br>Seattle, WA 98104<br>(206) 381-8965<br>5am - 6pm","serviceType":"inStore","coords":[-122.328228,47.597614]},{"id":3,"displayName":"Downtown: One Union Square","description":"600 University St<br>Seattle, WA 98101<br>(206) 343-7199<br>5am - 6pm","serviceType":"inStore","coords":[-122.33265,47.609157]},{"id":4,"displayName":"Downtown: Fourth & Seneca","description":"1125 4th Ave<br>Seattle, WA 98101<br>(206) 623-0860<br>5am - 6pm","serviceType":"inStore","coords":[-122.333739,47.606944]},{"id":5,"displayName":"Pike Place","description":"1912 Pike Pl<br>Seattle, WA 98101<br>(206) 448-8762<br>7am - 6pm","serviceType":"inStore","coords":[-122.342298,47.609748]},{"id":6,"displayName":"Metropolitan Park","description":"1220 Howell St<br>Seattle, WA 98101<br>(206) 262-0278<br>7am - 6pm","serviceType":"inStore","coords":[-122.3304,47.617003]},{"id":7,"displayName":"Downtown: 3rd Ave (1301 3rd Ave)","description":"1301 3rd Ave<br>Seattle, WA 98101<br>(206) 621-9627<br>7am - 6pm","serviceType":"inStore","coords":[-122.336026,47.607752]},{"id":8,"displayName":"Downtown: Pine & 7th","description":"721 Pine St<br>Seattle, WA 98101<br>(206) 264-8921<br>7am - 6pm","serviceType":"inStore","coords":[-122.334049,47.612661]},{"id":9,"displayName":"Downtown: 2nd Ave (1191 2nd Ave # 130)","description":"1191 2nd Ave # 130<br>Seattle, WA 98101<br>(206) 652-8496<br>5am - 6pm","serviceType":"inStore","coords":[-122.336392,47.606488]},{"id":10,"displayName":"Downtown: Swedish Medical Center","description":"1101 Madison St<br>Seattle, WA 98104<br>(206) 624-0281<br>5am - 6pm","serviceType":"inStore","coords":[-122.325076,47.609331]},{"id":11,"displayName":"Downtown: Starbucks Coffee","description":"211 Lenora St<br>Seattle, WA 98121<br>(206) 441-1388<br>7am - 5pm","serviceType":"inStore","coords":[-122.342958,47.612582]},{"id":12,"displayName":"Downtown: Plaza 600 Building","description":"600 Stewart St # 600<br>Seattle, WA 98101<br>(206) 441-6898<br>5am - 6pm","serviceType":"inStore","coords":[-122.337019,47.613637]},{"id":13,"displayName":"Central District: 23d & Jackson","description":"2300 S Jackson St<br>Seattle, WA 98144<br>(206) 726-0502<br>7am - 5pm","serviceType":"inStore","coords":[-122.302238,47.599295]},{"id":14,"displayName":"Downtown: Puget Sound Plaza","description":"1325 4th Ave<br>Seattle, WA 98101<br>(206) 623-5427<br>5am - 6pm","serviceType":"inStore","coords":[-122.335118,47.608437]},{"id":15,"displayName":"Downtown: Madison","description":"1301 Madison St<br>Seattle, WA 98104<br>(206) 254-1336<br>7am - 5pm","serviceType":"inStore","coords":[-122.322916,47.610271]},{"id":16,"displayName":"Downtown: 4th & Occidental","description":"400 Occidental Ave S<br>Seattle, WA 98104<br>(206) 624-2561<br>7am - 5pm","serviceType":"inStore","coords":[-122.332859,47.59919]},{"id":17,"displayName":"Belltown: 23rd & 1st","description":"2326 1st Ave<br>Seattle, WA 98121<br>(206) 956-4322<br>7am - 5pm","serviceType":"inStore","coords":[-122.347194,47.613942]},{"id":18,"displayName":"Downtown: Alaskan Way (2200 Alaskan Way # 120)","description":"2200 Alaskan Way # 120<br>Seattle, WA 98121<br>(206) 448-9304<br>5am - 6pm","serviceType":"inStore","coords":[-122.347647,47.610817]},{"id":19,"displayName":"Central District: 22nd & Madison","description":"2201 E Madison St<br>Seattle, WA 98112<br>(206) 323-0331<br>5am - 6pm","serviceType":"inStore","coords":[-122.303619,47.618388]},{"id":20,"displayName":"Mt. Baker: 29th & MLK","description":"2921 Martin Luther King Jr S<br>Seattle, WA 98144<br>(206) 721-1543<br>5am - 6pm","serviceType":"driveThru","coords":[-122.296324,47.577108]},{"id":21,"displayName":"S Lake Union: 12th & Dexter","description":"1211 Dexter Ave N<br>Seattle, WA 98109<br>(206) 283-2211<br>5am - 6pm","serviceType":"both","coords":[-122.342349,47.629822]},{"id":22,"displayName":"Capitol Hill: 16th & Olive","description":"1600 E Olive Way<br>Seattle, WA 98102<br>(206) 568-5185<br>7am - 5pm","serviceType":"inStore","coords":[-122.325007,47.619312]},{"id":23,"displayName":"West Seattle: Alki Ave","description":"2742 Alki Ave SW, Seattle, WA<br>(206) 381-0638<br>5am - 6pm","serviceType":"inStore","coords":[-122.411012,47.578978]},{"id":24,"displayName":"Downtown: Seattle Trust","description":"1000 2nd Ave # 101<br>Seattle, WA 98104<br>(206) 382-1688<br>7am - 6pm","serviceType":"inStore","coords":[-122.335097,47.605175]},{"id":25,"displayName":"Downtown: 2nd Ave (502 2nd Ave)","description":"502 2nd Ave<br>Seattle, WA 98104<br>(206) 381-0638<br>7am - 6pm","serviceType":"inStore","coords":[-122.332047,47.601745]},{"id":26,"displayName":"Downtown: 5th & Pine","description":"515 Pine St<br>Seattle, WA 98101<br>(206) 382-1201<br>5am - 6pm","serviceType":"inStore","coords":[-122.336338,47.611703]},{"id":27,"displayName":"Downtown: 3rd Ave (1111 3rd Ave)","description":"1111 3rd Ave<br>Seattle, WA 98101<br>(206) 442-9645<br>7am - 6pm","serviceType":"inStore","coords":[-122.334778,47.6064]},{"id":28,"displayName":"Rainier Valley: Rainier Plaza Shopping Center","description":"3820 Rainier Ave S # A1<br>Seattle, WA 98118<br>(206) 723-4143<br>5am - 6pm","serviceType":"inStore","coords":[-122.290341,47.569397]},{"id":29,"displayName":"Madison Park: 40th & Madison","description":"4000 E Madison St<br>Seattle, WA 98112<br>(206) 329-3736<br>7am - 6pm","serviceType":"both","coords":[-122.28104,47.633861]},{"id":30,"displayName":"Madrona: Lakeside Ave","description":"121 Lakeside Ave<br>Seattle, WA 98122<br>(206) 720-4803<br>5am - 6pm","serviceType":"inStore","coords":[-122.285304,47.601831]},{"id":31,"displayName":"First Hill: 12th & Columbia","description":"800 12th Ave<br>Seattle, WA 98122<br>(206) 215-2601<br>7am - 6pm","serviceType":"inStore","coords":[-122.316759,47.609211]},{"id":32,"displayName":"Downtown: 5th Ave (1420 5th Ave # 111)","description":"1420 5th Ave # 111<br>Seattle, WA 98101<br>(206) 381-3743<br>5am - 6pm","serviceType":"inStore","coords":[-122.334848,47.609878]},{"id":33,"displayName":"Rainier Valley: 48th & Rainier","description":"4824 Rainier Ave S<br>Seattle, WA 98118<br>(206) 721-8871<br>6am - 4pm","serviceType":"inStore","coords":[-122.285687,47.559057]},{"id":34,"displayName":"Downtown: Pacific Place","description":"600 Pike St<br>Seattle, WA 98101<br>(206) 264-1607<br>7am - 6pm","serviceType":"inStore","coords":[-122.33452,47.611148]},{"id":35,"displayName":"Capitol Hill: Broadway","description":"434 Broadway E<br>Seattle, WA 98102<br>(206) 323-7888<br>5am - 7:30pm","serviceType":"inStore","coords":[-122.320904,47.622379]},{"id":36,"displayName":"Queen Anne: Queen Anne Ave (425 Queen Anne Ave N)","description":"425 Queen Anne Ave N<br>Seattle, WA 98109<br>(206) 691-3396<br>5am - 6pm","serviceType":"inStore","coords":[-122.356773,47.622405]},{"id":37,"displayName":"Downtown: 6th & Denny","description":"620 Denny Way<br>Seattle, WA 98109<br>(206) 956-0408<br>5am - 6pm","serviceType":"inStore","coords":[-122.344776,47.618557]},{"id":38,"displayName":"Int D: 1st Ave","description":"1962 1st Ave S<br>Seattle, WA 98134<br>(206) 624-6045<br>5am - 6pm","serviceType":"inStore","coords":[-122.334174,47.58567]},{"id":39,"displayName":"S Lake Union: Westlake Ave","description":"1200 Westlake Ave N<br>Seattle, WA 98109<br>(206) 216-0306<br>7am - 6pm","serviceType":"both","coords":[-122.340986,47.629787]},{"id":40,"displayName":"Wallingford: 45th St","description":"2110 N 45th St<br>Seattle, WA 98103<br>(206) 548-9507<br>5am - 7pm","serviceType":"inStore","coords":[-122.333107,47.661451]},{"id":41,"displayName":"Capitol Hill: 15th Ave","description":"328 15th Ave E<br>Seattle, WA 98112<br>(206) 323-1568<br>5am - 7pm","serviceType":"both","coords":[-122.312508,47.621341]},{"id":42,"displayName":"Downtown: 1st Ave","description":"823 1st Ave S<br>Seattle, WA 98134<br>(206) 340-9184<br>6:30am - 2pm","serviceType":"inStore","coords":[-122.335516,47.60381]},{"id":43,"displayName":"Downtown: Alaskan Way (1101 Alaskan Way # 102)","description":"1101 Alaskan Way # 102<br>Seattle, WA 98101<br>(206) 554-7060<br>6am - 8pm","serviceType":"inStore","coords":[-122.339126,47.604478]},{"id":44,"displayName":"Univ D: 45th & University Way","description":"4555 University Way NE<br>Seattle, WA 98105<br>(206) 634-1390<br>5am - 7pm","serviceType":"inStore","coords":[-122.313114,47.66229]},{"id":45,"displayName":"Downtown: 4th & Blanchard","description":"2101 4th Ave # 150<br>Seattle, WA 98121<br>(206) 728-0883<br>5am - 7pm","serviceType":"inStore","coords":[-122.341378,47.613796]},{"id":46,"displayName":"Queen Anne: Queen Anne Ave (2135 Queen Anne Ave N)","description":"2135 Queen Anne Ave N<br>Seattle, WA 98109<br>(206) 301-9477<br>7am - 6pm","serviceType":"inStore","coords":[-122.356959,47.637596]},{"id":47,"displayName":"Downtown: 3rd Ave (999 3rd Ave)","description":"999 3rd Ave<br>Seattle, WA 98104<br>(206) 748-0058<br>5am - 7pm","serviceType":"inStore","coords":[-122.33402,47.605595]},{"id":48,"displayName":"Ravenna: 64th & 12th","description":"6417 12th Ave NE<br>Seattle, WA 98115<br>(206) 526-7230<br>7am - 6pm","serviceType":"inStore","coords":[-122.315683,47.675117]},{"id":49,"displayName":"Queen Anne: Elliott Ave","description":"1144 Elliott Ave W<br>Seattle, WA 98119<br>(206) 283-9629<br>7am - 6pm","serviceType":"both","coords":[-122.372145,47.629479]},{"id":50,"displayName":"West Seattle: 41st & Admiral","description":"4101 SW Admiral Way<br>Seattle, WA 98116<br>(206) 937-5010<br>7am - 5pm","serviceType":"inStore","coords":[-122.383912,47.581174]},{"id":51,"displayName":"Downtown: 7th Ave","description":"1700 7th Ave<br>Seattle, WA 98101<br>(206) 382-0636<br>7am - 5pm","serviceType":"inStore","coords":[-122.335168,47.613592]},{"id":52,"displayName":"Phinney Ridge: 67th St","description":"316 N 67th St<br>Seattle, WA 98103<br>(206) 781-4153<br>6am - 8pm","serviceType":"both","coords":[-122.355032,47.677839]},{"id":53,"displayName":"Northgate: Northgate Way (2137 N Northgate Way)","description":"2137 N Northgate Way<br>Seattle, WA 98133<br>(206) 417-1403<br>6am - 8pm","serviceType":"both","coords":[-122.333012,47.708654]},{"id":54,"displayName":"Downtown: Seattle Center Kiosk","description":"305 Harrison St<br>Seattle, WA 98109<br>(206) 728-4077<br>5am - 7pm","serviceType":"both","coords":[-122.348438,47.621985]},{"id":55,"displayName":"Queen Anne: Dravus St","description":"1607 W Dravus St<br>Seattle, WA 98119<br>(206) 285-6230<br>5am - 7pm","serviceType":"both","coords":[-122.377598,47.648454]},{"id":56,"displayName":"Downtown: Terry Ave","description":"442 Terry Ave N<br>Seattle, WA 98121<br>(206) 223-2173<br>7am - 5pm","serviceType":"both","coords":[-122.336405,47.617958]},{"id":57,"displayName":"Magnolia: McGraw St","description":"3300 W McGraw St<br>Seattle, WA 98199<br>(206) 298-3390<br>5am - 7pm","serviceType":"both","coords":[-122.399674,47.639583]},{"id":58,"displayName":"Univ D: U Village","description":"2650 NE 49th St<br>Seattle, WA 98105<br>(206) 522-6410<br>5am - 7pm","serviceType":"inStore","coords":[-122.299687,47.662663]},{"id":59,"displayName":"West Seattle: Fauntleroy","description":"4408 Fauntleroy Way SW<br>Seattle, WA<br>(206) 728-4077<br>5am - 6pm","serviceType":"driveThru","coords":[-122.377787,47.563977]},{"id":60,"displayName":"Univ D: 41st & University Way","description":"4147 University Way NE<br>Seattle, WA 98105<br>(206) 547-3280<br>7am - 5pm","serviceType":"inStore","coords":[-122.313312,47.658226]},{"id":61,"displayName":"Ballard: 22nd & Market","description":"2204 NW Market St<br>Seattle, WA 98107<br>(206) 782-2795<br>5am - 6pm","serviceType":"inStore","coords":[-122.384824,47.668705]},{"id":62,"displayName":"Green Lake: 71st & Green Lake","description":"7100 E Green Lake Dr N<br>Seattle, WA 98115<br>(206) 523-9594<br>5:30am - 6 pm","serviceType":"inStore","coords":[-122.325668,47.679741]},{"id":63,"displayName":"West Seattle: California & Fauntleroy","description":"6501 California Ave SW<br>Seattle, WA 98136<br>(206) 938-6371<br>7am - 5pm","serviceType":"inStore","coords":[-122.387347,47.544688]},{"id":64,"displayName":"Crown Hill: Holman Rd","description":"9999 Holman Rd NW<br>Seattle, WA 98117<br>(206) 783-8104<br>5:30am - 6 pm","serviceType":"inStore","coords":[-122.362198,47.70171]},{"id":65,"displayName":"Eastlake: 23rd & Eastlake","description":"2344 Eastlake Ave E<br>Seattle, WA 98102<br>(206) 324-5144<br>7am - 5pm","serviceType":"inStore","coords":[-122.325871,47.64076]},{"id":66,"displayName":"Montlake: 38th & Montlake Blvd","description":"3850 Montlake Blvd NE # 315<br>Seattle, WA 98195<br>(206) 362-3704<br>5:30am - 6 pm","serviceType":"inStore","coords":[-122.303442,47.65182]},{"id":67,"displayName":"Fremont: 34th & Fremont","description":"3415 Fremont Ave N # B<br>Seattle, WA 98103<br>(206) 633-3706<br>6am - 6 pm","serviceType":"inStore","coords":[-122.349819,47.649703]},{"id":68,"displayName":"Downtown: 6th & Union","description":"601 Union St # 224B<br>Seattle, WA 98101<br>(206) 264-2534<br>6am - 8pm","serviceType":"inStore","coords":[-122.333576,47.610121]},{"id":69,"displayName":"West Seattle: 26th & California Ave SW","description":"2622 California Ave SW<br>Seattle, WA 98116<br>(206) 937-5112<br>7am - 5pm","serviceType":"inStore","coords":[-122.386553,47.580756]},{"id":70,"displayName":"Wedgewood: 73rd & 35th","description":"7303 35th Ave NE<br>Seattle, WA 98115<br>(206) 517-2877<br>7am - 5pm","serviceType":"inStore","coords":[-122.370751,47.660342]},{"id":71,"displayName":"Rainier Valley","description":"9162 Rainier Ave S<br>Seattle, WA 98118<br>(206) 494-1120<br>7am - 5pm","serviceType":"inStore","coords":[-122.269973,47.520933]},{"id":72,"displayName":"QFC Starbucks (9023 25th Ave SW)","description":"9023 25th Ave SW<br>Seattle, WA 98106<br>(206) 937-1732<br>7am - 5pm","serviceType":"inStore","coords":[-122.364591,47.522446]},{"id":73,"displayName":"Lake City: 120th & Lake City Way","description":"12001 Lake City Way NE<br>Seattle, WA 98125<br>(206) 364-2490<br>6am - 6 pm","serviceType":"inStore","coords":[-122.297369,47.715637]},{"id":74,"displayName":"Northgate: Northgate Mall","description":"301 NE Northgate Way # 550<br>Seattle, WA 98125<br>(206) 306-8525<br>5am - 4:30pm","serviceType":"inStore","coords":[-122.325957,47.708584]},{"id":75,"displayName":"Northgate: Northgate Way (540 NE Northgate Way # A)","description":"540 NE Northgate Way # A<br>Seattle, WA 98125<br>(206) 367-6651<br>5am - 4:30pm","serviceType":"both","coords":[-122.322133,47.708605]},{"id":76,"displayName":"Downtown: King St","description":"83 S King St<br>Seattle, WA 98104<br>(206) 342-6400<br>5am - 6pm","serviceType":"inStore","coords":[-122.334435,47.598288]},{"id":77,"displayName":"Capitol Hill: 14th & Broadway","description":"1401 Broadway<br>Seattle, WA 98122<br>(206) 860-3818<br>7am - 5pm","serviceType":"inStore","coords":[-122.320823,47.61299]},{"id":78,"displayName":"Ballard: NW Market St","description":"1423 NW Market St<br>Seattle, WA 98107<br>(206) 784-6480<br>5am - 6pm","serviceType":"inStore","coords":[-122.374269,47.668648]},{"id":79,"displayName":"Central District: James Tower","description":"550 17th Ave # 190<br>Seattle, WA 98122<br>(206) 325-6750<br>7am - 5pm","serviceType":"inStore","coords":[-122.310214,47.606527]},{"id":80,"displayName":"Capitol Hill: 14th & John","description":"1410 E John St<br>Seattle, WA 98112<br>(206) 323-4988<br>7am - 5pm","serviceType":"inStore","coords":[-122.313805,47.619955]},{"id":81,"displayName":"Haller Lake: 130th & Aurora","description":"13035 Aurora Ave N<br>Seattle, WA 98133<br>(206) 368-9366<br>5:30am - 6 pm","serviceType":"both","coords":[-122.345047,47.723473]},{"id":82,"displayName":"Crown Hill: 15th Ave NW","description":"8340 15th Ave NW<br>Seattle, WA 98117<br>(206) 782-7464<br>7am - 5pm","serviceType":"inStore","coords":[-122.376758,47.689497]},{"id":83,"displayName":"Queen Anne: 1st Ave W","description":"516 1st Ave W<br>Seattle, WA 98119<br>(206) 494-1685<br>7am - 5pm","serviceType":"inStore","coords":[-122.358017,47.623512]},{"id":84,"displayName":"Mt. Baker: 27th & Rainier","description":"2707 Rainier Ave S<br>Seattle, WA 98144<br>(206) 725-2418<br>5am - 6pm","serviceType":"inStore","coords":[-122.29882,47.579161]},{"id":85,"displayName":"145th & 15th","description":"14359 15th Ave NE<br>Seattle, WA 98125<br>(206) 366-2707<br>5:30am - 4:30pm","serviceType":"both","coords":[-122.312769,47.733198]},{"id":86,"displayName":"Fremont: NW 45th St","description":"915 NW 45th St<br>Seattle, WA 98107<br>(206) 789-9322<br>6am - 7pm","serviceType":"inStore","coords":[-122.368917,47.661467]},{"id":87,"displayName":"Harbor Island: SW Klickitat","description":"1021 SW Klickitat Way<br>Seattle, WA 98134<br>(206) 903-6929<br>5am - 6pm","serviceType":"both","coords":[-122.347669,47.570571]},{"id":88,"displayName":"Arbor Heights: 28th Ave SW","description":"9620 28th Ave SW<br>Seattle, WA 98126<br>(206) 935-3996<br>5am - 6pm","serviceType":"inStore","coords":[-122.368603,47.517261]},{"id":89,"displayName":"West Seattle: 42nd Ave SW","description":"4704 42nd Ave SW<br>Seattle, WA 98116<br>(206) 938-6097<br>5:30am - 6 pm","serviceType":"inStore","coords":[-122.385461,47.560982]},{"id":90,"displayName":"Wallingford: 12th & 45th","description":"1218 N 45th St<br>Seattle, WA 98103<br>(206) 545-6945<br>6am - 7pm","serviceType":"inStore","coords":[-122.343206,47.661468]},{"id":91,"displayName":"Lake City: 143rd & Lake City Way","description":"14330 Lake City Way NE<br>Seattle, WA 98125<br>(206) 440-3366<br>5am - 7pm","serviceType":"both","coords":[-122.292402,47.732502]},{"id":92,"displayName":"QFC Starbucks (2500 SW Barton)","description":"2500 SW Barton<br>Seattle, WA 98126<br>(206) 935-0585<br>5am - 7pm","serviceType":"inStore","coords":[-122.364553,47.521045]},{"id":93,"displayName":"Barton Starbucks","description":"2600 SW Barton St<br>Seattle, WA 98126<br>(206) 935-0585<br>5am - 7pm","serviceType":"inStore","coords":[-122.365902,47.521055]},{"id":94,"displayName":"Greenwood: 87th & Greenwood","description":"8704 Greenwood Ave N<br>Seattle, WA 98103<br>(206) 494-0433<br>6am - 7pm","serviceType":"inStore","coords":[-122.355288,47.692529]},{"id":95,"displayName":"QFC Starbucks (11100 Roosevelt Way NE)","description":"11100 Roosevelt Way NE<br>Seattle, WA 98125<br>(206) 361-4849<br>5am - 6pm","serviceType":"inStore","coords":[-122.317827,47.70937]},{"id":96,"displayName":"Univ D: University Village","description":"4634 26th Ave NE<br>Seattle, WA 98105<br>(206) 522-5228<br>5am - 6pm","serviceType":"inStore","coords":[-122.29955,47.669245]},{"id":97,"displayName":"Int Dist: 24th & Utah","description":"2401 Utah Ave S<br>Seattle, WA 98134<br>(206) 447-1575<br>5am - 6pm","serviceType":"inStore","coords":[-122.335134,47.581893]},{"id":98,"displayName":"Downtown: 5th St","description":"701 5th St<br>Seattle, WA 98104<br>(206) 264-015<br>7am - 5pm","serviceType":"inStore","coords":[-122.32955600000001,47.604718000000005]},{"id":99,"displayName":"Downtown: Us Bank Centre Store","description":"1420 5th Ave<br>Seattle, WA 98101<br>(206) 467-0972<br>6am - 7pm","serviceType":"inStore","coords":[-122.334548,47.610178000000005]},{"id":100,"displayName":"Downtown: 1st & Marion","description":"114 Alaskan Way South<br>Seattle, WA 98101<br>(888) 888-2301<br>7am - 5pm","serviceType":"inStore","coords":[-122.336046,47.601586]},{"id":101,"displayName":"Queen Anne: Seattle Trust","description":"1000 2nd Avenue 120 N<br>Seattle, WA 98101<br>(206) 382-1688<br>6am - 7pm","serviceType":"inStore","coords":[-122.352842,47.618829]}];
 
-// ═══════════════════════════════════════════════
-//  HELPER: parse description string
-// ═══════════════════════════════════════════════
-function parseDescription(desc) {
-  if (!desc) return { address: '—', city: '', phone: '—', hours: '—' };
-  const parts = desc.split('<br>').map(s => s.trim()).filter(Boolean);
-  const address = parts[0] || '—';
-  const cityLine = parts[1] || '';
-  const phone = parts.find(p => p.match(/\(\d{3}\)/)) || '—';
-  const hours = parts.find(p => p.match(/am|pm/i)) || '—';
-  return { address, city: cityLine, phone, hours };
+// ── PARSE DESCRIPTION ──
+function parseDesc(desc){
+  if(!desc) return {address:'—',city:'',phone:'—',hours:'—'};
+  const p = desc.split('<br>').map(s=>s.trim()).filter(Boolean);
+  return {
+    address: p[0]||'—',
+    city:    p[1]||'',
+    phone:   p.find(s=>s.match(/\(\d{3}\)/))||'—',
+    hours:   p.find(s=>s.match(/am|pm/i))||'Call for hours'
+  };
 }
 
-// ═══════════════════════════════════════════════
-//  MAP SETUP
-// ═══════════════════════════════════════════════
-const map = L.map('map', {
-  center: [47.608013, -122.325167],
-  zoom: 12,
-  zoomControl: false
-});
-
-// Zoom control on right side
-L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-// Tile layer — CartoDB dark-matter (no API key)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-  maxZoom: 19,
-  subdomains: 'abcd'
+// ── MAP ──
+const map = L.map('map',{center:[47.608,-122.325],zoom:12,zoomControl:false});
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+  maxZoom:19, subdomains:'abcd'
 }).addTo(map);
 
-// ═══════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════
+// ── STATE ──
 let activeLayer = 'all';
 let searchQuery = '';
-let selectedMarker = null;
-const markerMap = new Map(); // name → { marker, feature, layerType }
-let allMarkers = [];
+let selectedId  = null;   // feature id (not name)
+const markerById = new Map();  // id → {marker, feature}
+let allEntries = [];
 
-// ═══════════════════════════════════════════════
-//  MARKER CREATION
-// ═══════════════════════════════════════════════
-function getLayerType(name) {
-  if (GEODATA.bothNames.has(name)) return 'both';
-  if (GEODATA.driveThruNames.has(name)) return 'driveThru';
-  return 'inStore';
-}
-
-function getMarkerColor(layerType) {
-  if (layerType === 'both') return '#0B3D1F';
-  if (layerType === 'driveThru') return '#1A6335';
-  return '#2D8653';
-}
-
-function createCustomIcon(layerType, selected = false) {
-  const color = selected ? '#D4AC5A' : getMarkerColor(layerType);
-  const border = layerType === 'both' ? '#D4AC5A' : '#fff';
+// ── ICON ──
+function markerColor(stype){ return stype==='both'?'#0B3D1F':stype==='driveThru'?'#1A6335':'#2D8653'; }
+function createIcon(stype, selected){
+  const c = selected?'#D4AC5A':markerColor(stype);
+  const border = (stype==='both'&&!selected)?'#D4AC5A':'#fff';
+  const sz = selected?30:24;
   return L.divIcon({
-    className: '',
-    html: `<div style="
-      width:${selected?32:26}px;height:${selected?32:26}px;
-      background:${color};
-      border:2.5px solid ${selected?'#fff':border};
-      border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      font-size:${selected?14:11}px;
-      box-shadow:0 2px ${selected?'12px':'6px'} rgba(0,0,0,${selected?0.4:0.25});
-      transition:all 0.15s;
-      cursor:pointer;
-    ">☕</div>`,
-    iconSize: [selected?32:26, selected?32:26],
-    iconAnchor: [selected?16:13, selected?16:13]
+    className:'',
+    html:`<div style="width:${sz}px;height:${sz}px;background:${c};border:2.5px solid ${border};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${selected?13:10}px;box-shadow:0 2px ${selected?10:5}px rgba(0,0,0,${selected?0.4:0.22});cursor:pointer;transition:all .15s">☕</div>`,
+    iconSize:[sz,sz], iconAnchor:[sz/2,sz/2]
   });
 }
 
-// ═══════════════════════════════════════════════
-//  OPEN DETAIL PANEL
-// ═══════════════════════════════════════════════
-function openDetail(feature, marker, layerType) {
-  const { name, address, city, phone, hours } = (() => {
-    const n = feature.properties.Name;
-    const p = parseDescription(feature.properties.description);
-    return { name: n, ...p };
-  })();
-  const [lng, lat] = feature.geometry.coordinates;
+// ── OPEN DETAIL ──
+function openDetail(feat){
+  const {address,city,phone,hours} = parseDesc(feat.description);
+  const [lng,lat] = feat.coords;
 
-  // Update selected marker style
-  if (selectedMarker && selectedMarker !== marker) {
-    const prev = allMarkers.find(m => m.marker === selectedMarker);
-    if (prev) selectedMarker.setIcon(createCustomIcon(prev.layerType, false));
+  // Reset previous
+  if(selectedId !== null && selectedId !== feat.id){
+    const prev = markerById.get(selectedId);
+    if(prev) prev.marker.setIcon(createIcon(prev.feat.serviceType, false));
   }
-  selectedMarker = marker;
-  marker.setIcon(createCustomIcon(layerType, true));
+  selectedId = feat.id;
+  const cur = markerById.get(feat.id);
+  if(cur) cur.marker.setIcon(createIcon(feat.serviceType, true));
 
-  // Fill detail panel
-  const badgeText = layerType === 'both' ? 'In-Store & Drive-Thru' :
-                    layerType === 'driveThru' ? 'Drive-Thru' : 'In-Store';
+  const badgeText = feat.serviceType==='both'?'In-Store & Drive-Thru':feat.serviceType==='driveThru'?'Drive-Thru':'In-Store';
   document.getElementById('detail-badge').textContent = badgeText;
-  document.getElementById('detail-name').textContent = name;
-  document.getElementById('detail-address').textContent = [address, city].filter(Boolean).join('\n');
-  document.getElementById('detail-phone').textContent = phone;
-  document.getElementById('detail-hours').textContent = hours;
-
-  // Google Maps directions link
-  document.getElementById('directions-btn').onclick = () => {
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+  document.getElementById('detail-name').textContent  = feat.displayName;
+  document.getElementById('detail-address').textContent = [address,city].filter(Boolean).join('\n');
+  document.getElementById('detail-phone').textContent   = phone;
+  document.getElementById('detail-hours').textContent   = hours;
+  document.getElementById('directions-btn').onclick = ()=>{
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,'_blank');
   };
-
   document.getElementById('detail-panel').classList.add('open');
 
-  // Highlight in list
-  document.querySelectorAll('.store-item').forEach(el => el.classList.remove('active'));
-  const listItem = document.querySelector(`.store-item[data-name="${CSS.escape(name)}"]`);
-  if (listItem) {
-    listItem.classList.add('active');
-    listItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+  // Highlight list item by ID
+  document.querySelectorAll('.store-item').forEach(el=>el.classList.remove('active'));
+  const li = document.querySelector(`.store-item[data-id="${feat.id}"]`);
+  if(li){ li.classList.add('active'); li.scrollIntoView({behavior:'smooth',block:'nearest'}); }
 
-  // Fly to
-  map.flyTo([lat, lng], Math.max(map.getZoom(), 14), { duration: 0.8 });
+  map.flyTo([lat,lng], Math.max(map.getZoom(),14), {duration:0.8});
 }
 
-// ═══════════════════════════════════════════════
-//  BUILD MARKERS
-// ═══════════════════════════════════════════════
+// ── BUILD MARKERS ──
 const layerGroup = L.layerGroup().addTo(map);
 
-function buildMarkers() {
+function buildMarkers(){
   layerGroup.clearLayers();
-  allMarkers = [];
+  allEntries = [];
+  markerById.clear();
 
-  const features = GEODATA.all.features;
-  features.forEach(feature => {
-    const name = feature.properties.Name;
-    const layerType = getLayerType(name);
-    const [lng, lat] = feature.geometry.coordinates;
+  FEATURES.forEach(feat=>{
+    const [lng,lat] = feat.coords;
+    const marker = L.marker([lat,lng],{icon:createIcon(feat.serviceType,false)});
 
-    const marker = L.marker([lat, lng], {
-      icon: createCustomIcon(layerType, false)
-    });
+    const {address,city,hours} = parseDesc(feat.description);
+    marker.bindPopup(L.popup({className:'custom-popup',offset:[0,0],closeButton:false}).setContent(`
+      <div class="popup-inner">
+        <div class="popup-name">${feat.displayName}</div>
+        <div class="popup-addr">${address}${city?'<br>'+city:''}</div>
+        <div class="popup-hours">⏰ ${hours}</div>
+      </div>
+      <div class="popup-footer" onclick="openDetail(FEATURES.find(f=>f.id===${feat.id}));this.closest('.leaflet-popup').style.display='none'">Click for full details →</div>
+    `));
 
-    const { address, city, phone, hours } = parseDescription(feature.properties.description);
+    marker.on('click',()=>openDetail(feat));
 
-    // Popup
-    const popup = L.popup({ className: 'custom-popup', offset: [0, 0], closeButton: false })
-      .setContent(`
-        <div class="popup-inner">
-          <div class="popup-name">${name}</div>
-          <div class="popup-addr">${address}${city ? '<br>' + city : ''}</div>
-          <div class="popup-hours">⏰ ${hours}</div>
-        </div>
-        <div class="popup-footer">Click for full details →</div>
-      `);
-
-    marker.bindPopup(popup);
-
-    marker.on('click', () => {
-      openDetail(feature, marker, layerType);
-    });
-
-    const entry = { marker, feature, layerType, name };
-    allMarkers.push(entry);
-    markerMap.set(name, entry);
-
+    const entry = {marker, feat};
+    allEntries.push(entry);
+    markerById.set(feat.id, entry);
     layerGroup.addLayer(marker);
   });
-
   applyFilters();
 }
 
-// ═══════════════════════════════════════════════
-//  FILTER LOGIC
-// ═══════════════════════════════════════════════
-function applyFilters() {
+// ── FILTER ──
+function isVisible(feat){
+  const matchLayer = activeLayer==='all'||(activeLayer===feat.serviceType);
   const q = searchQuery.toLowerCase();
+  const matchSearch = !q || feat.displayName.toLowerCase().includes(q) || (feat.description||'').toLowerCase().includes(q);
+  return matchLayer && matchSearch;
+}
 
-  allMarkers.forEach(({ marker, feature, layerType, name }) => {
-    const matchesLayer =
-      activeLayer === 'all' ||
-      (activeLayer === 'inStore' && layerType === 'inStore') ||
-      (activeLayer === 'driveThru' && layerType === 'driveThru') ||
-      (activeLayer === 'both' && layerType === 'both');
-
-    const matchesSearch = !q || name.toLowerCase().includes(q) ||
-      (feature.properties.description || '').toLowerCase().includes(q);
-
-    if (matchesLayer && matchesSearch) {
-      if (!layerGroup.hasLayer(marker)) layerGroup.addLayer(marker);
+function applyFilters(){
+  allEntries.forEach(({marker,feat})=>{
+    if(isVisible(feat)){
+      if(!layerGroup.hasLayer(marker)) layerGroup.addLayer(marker);
     } else {
-      if (layerGroup.hasLayer(marker)) layerGroup.removeLayer(marker);
+      if(layerGroup.hasLayer(marker)) layerGroup.removeLayer(marker);
     }
   });
-
   buildList();
   updateBadge();
 }
 
-// ═══════════════════════════════════════════════
-//  STORE LIST
-// ═══════════════════════════════════════════════
-function buildList() {
+// ── STORE LIST ──
+function buildList(){
   const container = document.getElementById('store-list');
   container.innerHTML = '';
-  const q = searchQuery.toLowerCase();
+  const visible = allEntries.filter(e=>isVisible(e.feat));
 
-  const visible = allMarkers.filter(({ feature, layerType, name }) => {
-    const matchesLayer =
-      activeLayer === 'all' ||
-      (activeLayer === 'inStore' && layerType === 'inStore') ||
-      (activeLayer === 'driveThru' && layerType === 'driveThru') ||
-      (activeLayer === 'both' && layerType === 'both');
-    const matchesSearch = !q || name.toLowerCase().includes(q) ||
-      (feature.properties.description || '').toLowerCase().includes(q);
-    return matchesLayer && matchesSearch;
-  });
-
-  if (visible.length === 0) {
-    container.innerHTML = `<div class="no-results"><div class="emoji">☕</div>No stores match your search.</div>`;
+  if(!visible.length){
+    container.innerHTML = '<div class="no-results"><div class="emoji">☕</div>No stores match your search.</div>';
     return;
   }
 
-  // Sort alphabetically
-  visible.sort((a, b) => a.name.localeCompare(b.name));
-
-  visible.forEach(({ feature, marker, layerType, name }) => {
-    const { address } = parseDescription(feature.properties.description);
-    const badgeText = layerType === 'both' ? 'Both' :
-                      layerType === 'driveThru' ? 'Drive' : 'In-Store';
-    const icon = layerType === 'both' ? '🚗' : layerType === 'driveThru' ? '🚘' : '🏠';
-
+  visible.sort((a,b)=>a.feat.displayName.localeCompare(b.feat.displayName));
+  visible.forEach(({feat,marker})=>{
+    const {address} = parseDesc(feat.description);
+    const icon = feat.serviceType==='both'?'🚗':feat.serviceType==='driveThru'?'🚘':'🏠';
+    const badge = feat.serviceType==='both'?'Both':feat.serviceType==='driveThru'?'Drive':'In-Store';
     const el = document.createElement('div');
     el.className = 'store-item';
-    el.dataset.name = name;
-    el.innerHTML = `
-      <div class="store-icon">${icon}</div>
-      <div class="store-info">
-        <div class="store-name">${name}</div>
-        <div class="store-addr">${address}</div>
-      </div>
-      <span class="store-badge">${badgeText}</span>
-    `;
-    el.addEventListener('click', () => openDetail(feature, marker, layerType));
+    el.dataset.id = feat.id;   // ← use numeric ID, not name
+    el.innerHTML = `<div class="store-icon">${icon}</div><div class="store-info"><div class="store-name">${feat.displayName}</div><div class="store-addr">${address}</div></div><span class="store-badge">${badge}</span>`;
+    el.addEventListener('click',()=>openDetail(feat));
+    if(feat.id===selectedId) el.classList.add('active');
     container.appendChild(el);
   });
 }
 
-function updateBadge() {
-  const q = searchQuery.toLowerCase();
-  const count = allMarkers.filter(({ feature, layerType, name }) => {
-    const matchesLayer = activeLayer === 'all' ||
-      (activeLayer === 'inStore' && layerType === 'inStore') ||
-      (activeLayer === 'driveThru' && layerType === 'driveThru') ||
-      (activeLayer === 'both' && layerType === 'both');
-    const matchesSearch = !q || name.toLowerCase().includes(q) ||
-      (feature.properties.description || '').toLowerCase().includes(q);
-    return matchesLayer && matchesSearch;
-  }).length;
-  document.getElementById('store-count-badge').textContent = `${count} store${count !== 1 ? 's' : ''}`;
+function updateBadge(){
+  const count = allEntries.filter(e=>isVisible(e.feat)).length;
+  document.getElementById('store-count-badge').textContent = `${count} store${count!==1?'s':''}`;
   document.getElementById('list-title').textContent =
-    activeLayer === 'all' ? 'All Locations' :
-    activeLayer === 'inStore' ? 'In-Store Only' :
-    activeLayer === 'driveThru' ? 'Drive-Thru Only' : 'In-Store & Drive-Thru';
+    activeLayer==='all'?'All Locations':activeLayer==='inStore'?'In-Store Only':activeLayer==='driveThru'?'Drive-Thru Only':'In-Store & Drive-Thru';
 }
 
-// ═══════════════════════════════════════════════
-//  FILTER BUTTONS
-// ═══════════════════════════════════════════════
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+// ── FILTER BUTTONS ──
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
     activeLayer = btn.dataset.layer;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-
-    // Close detail panel if open store no longer visible
-    if (selectedMarker) {
-      const entry = allMarkers.find(m => m.marker === selectedMarker);
-      if (entry) {
-        const matchesLayer = activeLayer === 'all' ||
-          (activeLayer === 'inStore' && entry.layerType === 'inStore') ||
-          (activeLayer === 'driveThru' && entry.layerType === 'driveThru') ||
-          (activeLayer === 'both' && entry.layerType === 'both');
-        if (!matchesLayer) closeDetail();
-      }
+    // Close detail if selected store no longer visible
+    if(selectedId!==null){
+      const e = markerById.get(selectedId);
+      if(e && !isVisible(e.feat)) closeDetail();
     }
     applyFilters();
   });
 });
 
-// ═══════════════════════════════════════════════
-//  SEARCH
-// ═══════════════════════════════════════════════
+// ── SEARCH ──
 const searchInput = document.getElementById('search-input');
-const clearBtn = document.getElementById('clear-search');
-
-searchInput.addEventListener('input', () => {
+const clearBtn    = document.getElementById('clear-search');
+searchInput.addEventListener('input',()=>{
   searchQuery = searchInput.value.trim();
-  clearBtn.classList.toggle('visible', searchQuery.length > 0);
+  clearBtn.classList.toggle('visible', searchQuery.length>0);
   applyFilters();
 });
-
-clearBtn.addEventListener('click', () => {
-  searchInput.value = '';
-  searchQuery = '';
+clearBtn.addEventListener('click',()=>{
+  searchInput.value=''; searchQuery='';
   clearBtn.classList.remove('visible');
   applyFilters();
 });
 
-// ═══════════════════════════════════════════════
-//  DETAIL CLOSE
-// ═══════════════════════════════════════════════
-function closeDetail() {
+// ── CLOSE DETAIL ──
+function closeDetail(){
   document.getElementById('detail-panel').classList.remove('open');
-  if (selectedMarker) {
-    const entry = allMarkers.find(m => m.marker === selectedMarker);
-    if (entry) selectedMarker.setIcon(createCustomIcon(entry.layerType, false));
-    selectedMarker = null;
+  if(selectedId!==null){
+    const e = markerById.get(selectedId);
+    if(e) e.marker.setIcon(createIcon(e.feat.serviceType,false));
+    selectedId = null;
   }
-  document.querySelectorAll('.store-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.store-item').forEach(el=>el.classList.remove('active'));
 }
+document.getElementById('detail-close').addEventListener('click',closeDetail);
 
-document.getElementById('detail-close').addEventListener('click', closeDetail);
-
-// Close detail on map click
-map.on('click', e => {
-  if (!e.originalEvent.target.closest('.starbucks-marker')) {
-    // only close if clicking blank map area
-  }
-});
-
-// ═══════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════
+// ── INIT ──
 buildMarkers();
 </script>
 </body>
