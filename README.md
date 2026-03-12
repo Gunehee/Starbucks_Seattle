@@ -1,3 +1,4 @@
+[README (1).md](https://github.com/user-attachments/files/25926505/README.1.md)
 <div align="center">
 
 # ☕ Starbucks in Seattle
@@ -8,11 +9,24 @@ Filter by service type, search by address, and get directions — all from a sin
 
 <br>
 
+<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
+  <img src="https://img.shields.io/badge/🗺️%20Launch%20Interactive%20Map-0B3D1F?style=for-the-badge&logoColor=white" alt="Launch Map" height="44">
+</a>
+&nbsp;&nbsp;
 <a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/index.html">
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
+&nbsp;&nbsp;
+<a href="https://github.com/Gunehee/Starbucks_Seattle">
+  <img src="https://img.shields.io/badge/⌥%20Source%20Code-333333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" height="44">
+</a>
 
 <br><br>
+
+![Stores](https://img.shields.io/badge/Stores-102-2D8653?style=flat-square)
+![Filters](https://img.shields.io/badge/Service%20Filters-4-1A6335?style=flat-square)
+![API Key](https://img.shields.io/badge/API%20Key%20Required-None-D4AC5A?style=flat-square)
+![Framework](https://img.shields.io/badge/Framework-Vanilla%20JS-0B3D1F?style=flat-square)
 
 </div>
 
@@ -70,13 +84,11 @@ The source dataset contains worldwide Starbucks locations as of 2021. Cleaning s
 | Technology | Role |
 |---|---|
 | [Leaflet.js v1.9.4](https://leafletjs.com/) | Interactive map rendering |
-| [CartoDB Voyager](https://carto.com/basemaps/) | Base map tile layer (no API key) |
+| [OpenStreetMap](https://www.openstreetmap.org/) | Base map tile layer (no API key) |
 | GeoJSON | Store location and attribute data, embedded inline |
 | Vanilla JavaScript (ES6+) | Filtering, search, and all interactivity |
 | CSS3 | Layout, animations, and Starbucks-themed design |
 | [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started) | Directions deep link (no key required) |
-
-All dependencies load via CDN. No build tools, no framework, no API key required.
 
 ---
 
@@ -132,7 +144,7 @@ Developed as a group assignment for **GEOG 495: Digital Geographies** at the **U
 
 **Libraries**
 - Agafonkin, V. (2010). *Leaflet.js* (v1.9.4). https://leafletjs.com/
-- CARTO. (n.d.). *Voyager Basemap Tiles*. https://carto.com/basemaps/
+- OpenStreetMap contributors. (n.d.). *OpenStreetMap*. https://www.openstreetmap.org/copyright
 
 **Context & Background**
 - Starbucks. (n.d.). *Our Heritage*. https://www.starbucks.com/about-us/our-heritage/
@@ -143,4 +155,3 @@ Developed as a group assignment for **GEOG 495: Digital Geographies** at the **U
 - Condé Nast Traveler. (n.d.). *Starbucks Reserve Roastery, Seattle*. https://www.cntraveler.com/bars/seattle/starbucks-reserve-roastery
 
 ---
-
