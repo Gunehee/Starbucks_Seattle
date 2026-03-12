@@ -144,6 +144,3 @@ Developed as a group assignment for **GEOG 495: Digital Geographies** at the **U
 
 ---
 
-<div align="center">
-<i>GEOG 495 — Digital Geographies · University of Washington · Seattle, WA</i>
-</div>
