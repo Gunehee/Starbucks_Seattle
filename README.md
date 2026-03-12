@@ -1,4 +1,3 @@
-[README (1).md](https://github.com/user-attachments/files/25926505/README.1.md)
 <div align="center">
 
 # ☕ Starbucks in Seattle
@@ -9,25 +8,10 @@ Filter by service type, search by address, and get directions — all from a sin
 
 <br>
 
-<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
-  <img src="https://img.shields.io/badge/🗺️%20Launch%20Interactive%20Map-0B3D1F?style=for-the-badge&logoColor=white" alt="Launch Map" height="44">
-</a>
-&nbsp;&nbsp;
 <a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/index.html">
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
-&nbsp;&nbsp;
-<a href="https://github.com/Gunehee/Starbucks_Seattle">
-  <img src="https://img.shields.io/badge/⌥%20Source%20Code-333333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" height="44">
-</a>
-
 <br><br>
-
-![Stores](https://img.shields.io/badge/Stores-102-2D8653?style=flat-square)
-![Filters](https://img.shields.io/badge/Service%20Filters-4-1A6335?style=flat-square)
-![API Key](https://img.shields.io/badge/API%20Key%20Required-None-D4AC5A?style=flat-square)
-![Framework](https://img.shields.io/badge/Framework-Vanilla%20JS-0B3D1F?style=flat-square)
-
 </div>
 
 ---
