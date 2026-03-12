@@ -4,7 +4,7 @@
 ### Interactive Location Finder
 
 **A geospatial web application mapping all 102 Starbucks locations across Seattle, WA.**  
-Filter by service type, search by address, and get directions — all from a single file with no API key.
+Filter by service type, search by address, and get directions.
 
 <br>
 
