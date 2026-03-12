@@ -8,11 +8,25 @@ Filter by service type, search by address, and get directions — all from a sin
 
 <br>
 
-<!-- ── DEMO BUTTONS ── -->
+<a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/map.html">
+  <img src="https://img.shields.io/badge/🗺️%20Launch%20Interactive%20Map-0B3D1F?style=for-the-badge&logoColor=white" alt="Launch Map" height="44">
+</a>
+&nbsp;&nbsp;
 <a href="https://htmlpreview.github.io/?https://github.com/Gunehee/Starbucks_Seattle/blob/main/index.html">
   <img src="https://img.shields.io/badge/📄%20View%20Project%20Page-1A6335?style=for-the-badge&logoColor=white" alt="Project Page" height="44">
 </a>
+&nbsp;&nbsp;
+<a href="https://github.com/Gunehee/Starbucks_Seattle">
+  <img src="https://img.shields.io/badge/⌥%20Source%20Code-333333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" height="44">
+</a>
+
 <br><br>
+
+![Stores](https://img.shields.io/badge/Stores-102-2D8653?style=flat-square)
+![Filters](https://img.shields.io/badge/Service%20Filters-4-1A6335?style=flat-square)
+![API Key](https://img.shields.io/badge/API%20Key%20Required-None-D4AC5A?style=flat-square)
+![Framework](https://img.shields.io/badge/Framework-Vanilla%20JS-0B3D1F?style=flat-square)
+
 </div>
 
 ---
@@ -86,14 +100,15 @@ Starbucks_Seattle/
 ├── index.html                    # Portfolio landing page
 ├── map.html                      # Interactive map application  ← main demo
 ├── README.md
-├── Starbucks_Cleaned.csv         # Cleaned source dataset
-├── Starbucks_Seattle.geojson     # All 102 store locations
-├── in_store.geojson
-├── drive_thru.geojson
-└── both.geojson
+└── assets/
+    ├── Starbucks_Seattle.geojson # All 102 store locations
+    ├── in_store.geojson
+    ├── drive_thru.geojson
+    ├── both.geojson
+    └── Starbucks_Cleaned.csv     # Cleaned source dataset
 ```
 
-`map.html` is the standalone interactive map — all CSS, JS, and GeoJSON data are embedded inline. `index.html` is the portfolio overview page.
+`map.html` is the standalone interactive map — all CSS, JS, and GeoJSON data are embedded inline, so no files from `assets/` are fetched at runtime. `index.html` is the portfolio overview page.
 
 ---
 
@@ -112,7 +127,7 @@ No install steps. No local server required.
 
 ## Team
 
-Developed a **Digital Geographies** at the **University of Washington**.
+Developed as a group assignment for **GEOG 495: Digital Geographies** at the **University of Washington**.
 
 | Contributor | Responsibilities |
 |---|---|
@@ -141,3 +156,7 @@ Developed a **Digital Geographies** at the **University of Washington**.
 - Condé Nast Traveler. (n.d.). *Starbucks Reserve Roastery, Seattle*. https://www.cntraveler.com/bars/seattle/starbucks-reserve-roastery
 
 ---
+
+<div align="center">
+<i>GEOG 495 — Digital Geographies · University of Washington · Seattle, WA</i>
+</div>
