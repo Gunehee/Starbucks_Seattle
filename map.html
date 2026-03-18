@@ -262,9 +262,23 @@ function openDetail(feat){
   const badgeText = feat.serviceType==='both'?'In-Store & Drive-Thru':feat.serviceType==='driveThru'?'Drive-Thru':'In-Store';
   document.getElementById('detail-badge').textContent = badgeText;
   document.getElementById('detail-name').textContent  = feat.displayName;
-  document.getElementById('detail-address').textContent = [address,city].filter(Boolean).join('\n');
-  document.getElementById('detail-phone').textContent   = phone;
-  document.getElementById('detail-hours').textContent   = hours;
+
+  // Address row — hide if no data
+  const addrVal  = [address,city].filter(s=>s&&s!=='—').join('\n');
+  const addrRow  = document.getElementById('detail-address').closest('.detail-row');
+  if(addrVal){ document.getElementById('detail-address').textContent = addrVal; addrRow.style.display=''; }
+  else { addrRow.style.display='none'; }
+
+  // Phone row — hide if no data
+  const phoneRow = document.getElementById('detail-phone').closest('.detail-row');
+  if(phone && phone!=='—'){ document.getElementById('detail-phone').textContent = phone; phoneRow.style.display=''; }
+  else { phoneRow.style.display='none'; }
+
+  // Hours row — hide if no data
+  const hoursRow = document.getElementById('detail-hours').closest('.detail-row');
+  if(hours && hours!=='—' && hours!=='Call for hours'){ document.getElementById('detail-hours').textContent = hours; hoursRow.style.display=''; }
+  else { hoursRow.style.display='none'; }
+
   document.getElementById('directions-btn').onclick = ()=>{
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,'_blank');
   };
@@ -291,16 +305,25 @@ function buildMarkers(){
     const marker = L.marker([lat,lng],{icon:createIcon(feat.serviceType,false)});
 
     const {address,city,hours} = parseDesc(feat.description);
+
+    // Only show fields that have real data
+    const addrLine  = address && address !== '—'
+                      ? `<div class="popup-addr">${address}${city?'<br>'+city:''}</div>` : '';
+    const hoursLine = hours && hours !== '—' && hours !== 'Call for hours'
+                      ? `<div class="popup-hours">⏰ ${hours}</div>` : '';
+
     marker.bindPopup(L.popup({className:'custom-popup',offset:[0,0],closeButton:false}).setContent(`
       <div class="popup-inner">
         <div class="popup-name">${feat.displayName}</div>
-        <div class="popup-addr">${address}${city?'<br>'+city:''}</div>
-        <div class="popup-hours">⏰ ${hours}</div>
+        ${addrLine}
+        ${hoursLine}
       </div>
-      <div class="popup-footer" onclick="openDetail(FEATURES.find(f=>f.id===${feat.id}));this.closest('.leaflet-popup').style.display='none'">Click for full details →</div>
+      <div class="popup-footer" onclick="openDetail(FEATURES.find(f=>f.id===${feat.id}));this.closest('.leaflet-popup').style.display='none'">View store details →</div>
     `));
 
-    marker.on('click',()=>openDetail(feat));
+    // Marker click → open popup only
+    // Detail panel opens when user clicks "View store details →"
+    marker.on('click', L.DomEvent.stopPropagation);
 
     const entry = {marker, feat};
     allEntries.push(entry);
